@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Soundle</title>
+    <link type="image/png" sizes="16x16" rel="icon" href="../img/icons8-music-16.png">
     <!--We should use common.css for the common styles between pages-->
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/login.css">
@@ -13,20 +14,24 @@
         <h1>Welcome to Soundle</h1>
     </header>
     <main>
-        <section class="login-form">
+        <section class="login-section">
             <h2>Login</h2>
-            <form action="home.html" method="post">
+            <form id="login-form">
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
                 </div>
                 <button type="submit">Login</button>
             </form>
         </section>
     </main>
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&#169; 2025 Soundle. Developed for the ECV course at Universitat Pompeu Fabra, 2024-2025. All rights reserved. &reg;</p>
+        </div>
+    </footer>
+    <script src="../js/login.js"></script>
 </body>
 </html>
