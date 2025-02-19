@@ -33,3 +33,7 @@ a {
 a:hover {
     color: #005bb5;
 }
+
+.hidden {
+    visibility: hidden;
+}

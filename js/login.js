@@ -39,8 +39,7 @@ loginForm.addEventListener('submit', (event) => {
         // Redirect to home.html upon successful login
         window.location.href = 'home.html';
     })
-    .catch(error => {
-        // Catch and handle errors
+    .catch(error => { // any HTTP response that is not ok
         alert(`${error.message}`);
     });
 });
