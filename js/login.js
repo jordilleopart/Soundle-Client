@@ -17,8 +17,6 @@ loginForm.addEventListener('submit', (event) => {
         formData[input.name] = input.value;
     });
 
-    console.log(JSON.stringify(formData));
-
     // Send a POST request to the backend
     fetch(`${address}/login`, {
         method: 'POST',
@@ -28,18 +26,28 @@ loginForm.addEventListener('submit', (event) => {
         body: JSON.stringify(formData), // Sending form data as a JSON string
     })
     .then(res => {
-        if (!res.ok) {
-            throw new Error(`${res.status}`);
-        }
+        switch (res.status) {
+            case 200:
+                // Extract and store JWT token
+                const JWTToken = res.headers.get("Authorization").split(' ')[1];
+                localStorage.setItem('jwtToken', JWTToken);
         
-        // extract and store JWT token
-        const JWTToken = res.headers.get("Authorization").split(' ')[1];
-        localStorage.setItem('jwtToken', JWTToken);
-
-        // Redirect to home.html upon successful login
-        window.location.href = 'home.html';
-    })
-    .catch(error => { // any HTTP response that is not ok
-        alert(`${error.message}`);
+                // Redirect to home.html upon successful login
+                window.location.href = 'home.html';
+                break; // Added break to prevent fallthrough
+            case 401:
+                // Handle Unauthorized (401) response
+                
+                break;
+            default:
+                // Handle other error responses (e.g., 400, 500, etc.)
+                res.json().then(data => {
+                    sessionStorage.setItem('httpStatus', res.status);
+                    sessionStorage.setItem('customMessage', data.message);
+                });
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+                break;
+        }
     });
 });
