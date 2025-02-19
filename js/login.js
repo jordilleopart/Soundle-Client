@@ -37,7 +37,11 @@ loginForm.addEventListener('submit', (event) => {
                 break; // Added break to prevent fallthrough
             case 401:
                 // Handle Unauthorized (401) response
-                
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.innerText = "Invalid username or password.";
+                errorMessage.classList.remove('hidden');
+                document.getElementById('username').classList.add('input-error');
+                document.getElementById('password').classList.add('input-error');
                 break;
             default:
                 // Handle other error responses (e.g., 400, 500, etc.)

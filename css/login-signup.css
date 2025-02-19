@@ -21,12 +21,23 @@ main {
     justify-content: center;
 }
 
-.login-section, .signup-section {
+.login-section {
     background-color: white;
     padding: 20px;
     margin: 50px auto;
     width: 100%;
     max-width: 400px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.signup-section {
+    background-color: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 100%;
+    max-width: 500px;
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
@@ -76,4 +87,27 @@ button:hover {
 
 .double-column input {
     flex: 1; /* Distribute equal space between fields */
+}
+
+/* Error message styling */
+.error-message {
+    color: #D8000C;  /* Red color for error messages */
+    background-color: #FFBABA;  /* Light red background */
+    border: 1px solid #D8000C;  /* Red border */
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    display: block;  /* Initially hide the error message */
+}
+
+/* Optional: style for form inputs when validation fails */
+.input-error {
+    border-color: #D8000C !important;  /* Red border for inputs with errors */
+}
+
+.hidden {
+    display: none !important;
 }
