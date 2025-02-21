@@ -4,8 +4,8 @@ window.onload = function() {
     const customMessage = sessionStorage.getItem('customMessage') || "Something went wrong.";
 
     // Update the HTML elements with the status and custom message
-    document.getElementById('status-code').innerText = `Error ${httpStatus}`;
+    document.getElementById('status-code').innerText = `${httpStatus}`;
     document.getElementById('error-message').innerText = customMessage;
     // Update the page title with the HTTP status code
-    document.title = `Error ${httpStatus}`;
+    document.title = `${httpStatus}`;
 };
