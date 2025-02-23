@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     sessionStorage.setItem('customMessage', data.message);
                 });
                 // Redirect to error-template.html upon error
-                // window.location.href = 'error-template.html';
+                window.location.href = 'error-template.html';
                 break;
         }
 	})
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.setItem('httpStatus', 500);
         sessionStorage.setItem('customMessage', "Internal Server Error");
         // Redirect to error-template.html upon error
-        // window.location.href = 'error-template.html';
+        window.location.href = 'error-template.html';
     });
 });
 
