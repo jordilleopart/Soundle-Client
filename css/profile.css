@@ -1,4 +1,9 @@
-/* profile.css */
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .home-button {
     position: absolute;
     top: 20px;
@@ -15,14 +20,24 @@
     background-color: #005bb5;
 }
 
-.profile-info {
+.profile-section {
     background-color: white;
     padding: 20px;
-    margin: 20px auto;
+    margin: 20px;
     width: 80%;
     max-width: 600px;
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#user-info {
+    width: 30%;
+    height: 100%;
+}
+
+#game-stats {
+    flex-grow: 1;
+    text-align: start;
 }
 
 .profile-picture {
@@ -32,13 +47,13 @@
     margin-bottom: 20px;
 }
 
-.profile-info h2 {
-    margin: 10px 0;
+.profile-section h2 {
+    margin-bottom: 10px;
     font-size: 1.8em;
     font-weight: 500;
 }
 
-.profile-info p {
+.profile-section p {
     margin: 5px 0;
     font-size: 1.2em;
     color: #6e6e73;

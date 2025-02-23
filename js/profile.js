@@ -25,9 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	.then(response => {
         switch (response.status) {
             case 200:
-                // If request is successful, remove 'hidden' class to reveal the body
-				document.body.classList.remove('hidden');
-				console.log(response);
+                return response.json();
             default:
                 // Handle other error responses (e.g., 400, 500, etc.)
                 response.json().then(data => {
@@ -38,5 +36,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 // window.location.href = 'error-template.html';
                 break;
         }
-	});
+	})
+    .then(userData => {
+        // Set the profile information
+        fillProfileData(userData);
+
+        // If request is successful, remove 'hidden' class to reveal the body
+        document.body.classList.remove('hidden');
+    })
+    .catch((error) => {
+        // Handle error parsing json
+        sessionStorage.setItem('httpStatus', 500);
+        sessionStorage.setItem('customMessage', "Internal Server Error");
+        // Redirect to error-template.html upon error
+        // window.location.href = 'error-template.html';
+    });
 });
+
+function fillProfileData(data) {
+    // Set the user's full name
+    const fullNameElement = document.getElementById('full-name');
+    fullNameElement.textContent = `${data.first_name} ${data.last_name}`;
+
+    // Set the username
+    const usernameElement = document.getElementById('username');
+    usernameElement.textContent = `Username: ${data.user_name}`;
+
+    // Set the email
+    const emailElement = document.getElementById('email');
+    emailElement.textContent = `Email: ${data.user_email}`;
+
+    // Set the join date (format it in a readable form)
+    const joinDateElement = document.getElementById('join-date');
+    const joinDate = new Date(data.join_date);
+    joinDateElement.textContent = `Member since: ${joinDate.toLocaleDateString()}`;
+
+    // Set the total games played
+    const totalGamesElement = document.getElementById('games-played');
+    totalGamesElement.textContent = `Total Games Played: ${data.total_games}`;
+
+    // Set the total wins
+    const totalWinsElement = document.getElementById('games-won');
+    totalWinsElement.textContent = `Total Wins: ${data.total_wins}`;
+};
