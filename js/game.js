@@ -24,12 +24,15 @@ document.addEventListener("DOMContentLoaded", function() {
         trackImage = image;
         trackName = name;
         urlYouTube = youtubeUrl;
-
+    
+        // Format the release date to display only the date
+        const formattedDate = new Date(releaseDate).toLocaleDateString('en-GB'); // 'en-GB' for day/month/year format
+    
         // Update the track information in the UI (but keep the image hidden)
         document.getElementById('track-artist').textContent = `Artist: ${trackArtist}`;
-        document.getElementById('track-year').textContent = `Release date: ${releaseDate}`;
+        document.getElementById('track-year').textContent = `Release date: ${formattedDate}`;
         document.getElementById('track-image').src = trackImage;
-
+    
         // Extract YouTube video ID and update the embedded player
         const videoId = extractYouTubeId(urlYouTube);
         updateYouTubePlayer(videoId);
@@ -51,6 +54,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Event listener for fetching a random track from the server
     document.getElementById('shuffle-btn').addEventListener('click', function() {
+        // Clear any existing error messages before fetching new track data
+        const errorContainer = document.querySelector('.error-container');
+        errorContainer.innerHTML = ''; // This removes all error messages
+    
+        // Reset the currentStep to 0 to start the track element sequence from the beginning
+        currentStep = 0;
+    
+        // Hide all elements initially before revealing them again
+        elements.forEach(element => element.classList.add('hidden'));
+        attemptBoxes.forEach(box => box.style.backgroundColor = ''); // Reset the background color
+    
         const token = localStorage.getItem('jwtToken');
         fetch(`${address}/track/random`, {
             method: 'GET',
@@ -70,16 +84,18 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             // Adapt the response to match the expected format
             updateTrackInfo(
-                data.track_artist,         // Renamed from `artist`
-                data.track_release_date,   // Renamed from `release_date`
-                data.track_cover_url,      // Renamed from `image_url`
-                data.track_name,           // Renamed from `name`
-                data.track_preview_url     // Renamed from `video_url`
+                data.track_artist,         
+                data.track_release_date,   
+                data.track_cover_url,      
+                data.track_name,           
+                data.track_preview_url   
             );
         })
         .catch(error => console.error('Error fetching data:', error));
     });
-
+    
+    //This funcion wouldn't be necessry if we just send the video ID from the server, change when all works
+    
     // Function to extract the YouTube video ID from a given URL
     function extractYouTubeId(url) {
         const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
