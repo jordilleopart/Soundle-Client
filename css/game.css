@@ -145,3 +145,14 @@ input:focus {
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.error-box {
+    width: 280px;
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid red;
+    border-radius: 10px;
+    background-color: rgba(255, 0, 0, 0.1);
+    color: red;
+    margin-top: 10px;
+}

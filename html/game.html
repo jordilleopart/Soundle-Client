@@ -6,7 +6,6 @@
     <title>Daily Challenge 2000</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/game.css">
-    <script defer src="../js/game.js"></script>
 </head>
 <body>
     <main>
@@ -18,24 +17,23 @@
         </header>
 
         <div class="challenge-container">
+            <div class="error-container">
+            </div>
             <div class="image-placeholder" id="album-container">
-                <img id="track-image" src="https://i.scdn.co/image/ab67616d0000b2737e7f1d0bdb2bb5a2afc4fb25" alt="Track Cover" class="hidden">
+                <img id="track-image" src="" alt="Track Cover" class="hidden">
             </div>
         </div>
         <div class="track-info" id="track-info">
-            <p id="track-year" class="hidden">Release date: 31-1-2025</p>
-            <p id="track-artist" class="hidden">Artist: The Weeknd</p>
+            <p id="track-year" class="hidden">Release date: </p>
+            <p id="track-artist" class="hidden">Artist: </p>
         </div>
         <div class="audio-player">
-            <!-- Button to Play Music -->
             <button id="shuffle-btn">
                 <img src="../img/shuffle.png" alt="Shuffle">
             </button>
-            <!-- Button to Play Music -->
             <button id="play-btn">
-                <img src="../img/play.fill.png" alt="Play">
+                <img id="play-icon" src="../img/play.fill.png" alt="Play">
             </button>
-            <!-- Button to show hide elements -->
             <button id="show-elements-btn">
                 <img src="../img/forward.fill.png" alt="Show Elements">
             </button>
@@ -43,14 +41,16 @@
         <div class="input-container">
             <input type="text" id="user-input" placeholder="Input">
         </div>
-
         <div class="attempts">
             <div class="attempt-box"></div>
             <div class="attempt-box"></div>
             <div class="attempt-box"></div>
             <div class="attempt-box"></div>
         </div>
-
+        <div id="audio-player-container">
+            <iframe id="player" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+        </div>
     </main>
 </body>
+<script defer src="../js/game.js"></script>
 </html>
