@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Challenges</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/pick-challenge.css">
+</head>
+<body>
+    <h1>Available Challenges</h1>
+    <div class="container">
+        <div class="header">
+            <select id="filter">
+                <option value="">Select</option>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <input type="text" id="search" placeholder="Search">
+            <button onclick="playRandom()">Play Random</button>
+        </div>
+        <div class="challenges" id="challengeList">
+            <!-- Challenges will be added dynamically -->
+        </div>
+    </div>
+    
+    <script src="../js/pick-challenge.js"></script>
+</body>
+</html>
