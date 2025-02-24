@@ -3,20 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <link rel="stylesheet" href="game.css">
+    <title>Daily Challenge 2000</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/game.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to Soundle</h1>
-    </header>
     <main>
-        <p>This is the home page of Soundle.</p>
+        <header>
+            <h1>Game Template</h1>
+            <a href="profile.html" class="profile-button">
+                <img src="../img/person.crop.circle.fill-b.png">
+            </a>
+        </header>
+
+        <div class="challenge-container">
+            <div class="error-container">
+            </div>
+            <div class="image-placeholder" id="album-container">
+                <img id="track-image" src="" alt="Track Cover" class="hidden">
+            </div>
+        </div>
+        <div class="track-info" id="track-info">
+            <p id="track-year" class="hidden">Release date: </p>
+            <p id="track-artist" class="hidden">Artist: </p>
+        </div>
+        <div class="audio-player">
+            <button id="shuffle-btn">
+                <img src="../img/shuffle.png" alt="Shuffle">
+            </button>
+            <button id="play-btn">
+                <img id="play-icon" src="../img/play.fill.png" alt="Play">
+            </button>
+            <button id="show-elements-btn">
+                <img src="../img/forward.fill.png" alt="Show Elements">
+            </button>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Input">
+        </div>
+        <div class="attempts">
+            <div class="attempt-box"></div>
+            <div class="attempt-box"></div>
+            <div class="attempt-box"></div>
+            <div class="attempt-box"></div>
+        </div>
+        <div id="audio-player-container">
+            <iframe id="player" width="0" height="0" 
+                    src="" 
+                    frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        </div>
     </main>
-    <div>
-        <a href="game.html" class="home-button">Daily Challenge</a>
-        <a href="game.html" class="home-button">1 vs 1 Challenge</a>
-        <a href="game.html" class="home-button">Team Challenge</a>
-    </div>
+    <script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
+    <script defer src="../js/game.js"></script>
 </body>
+
 </html>

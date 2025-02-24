@@ -1,0 +1,113 @@
+/* login.css */
+
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+header, footer {
+    width: 100%;
+    flex-shrink: 0; /* Prevent shrinking */
+    flex-grow: 0; /* Prevent growing */
+    padding: 20px; /* Adjust padding to fit content */
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-section {
+    background-color: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.signup-section {
+    background-color: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.login-section h2, .signup-section h2 {
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #d2d2d7;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #0071e3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 10px 0;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+/* Adjust double-column layout */
+.double-column {
+    display: flex;
+    gap: 10px; /* Space between the fields */
+}
+
+.double-column input {
+    flex: 1; /* Distribute equal space between fields */
+}
+
+/* Error message styling */
+.error-message {
+    color: #D8000C;  /* Red color for error messages */
+    background-color: #FFBABA;  /* Light red background */
+    border: 1px solid #D8000C;  /* Red border */
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    display: block;  /* Initially hide the error message */
+}
+
+/* Optional: style for form inputs when validation fails */
+.input-error {
+    border-color: #D8000C !important;  /* Red border for inputs with errors */
+}
+
+.hidden {
+    display: none !important;
+}

@@ -1,0 +1,60 @@
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.home-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #0071e3;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.home-button:hover {
+    background-color: #005bb5;
+}
+
+.profile-section {
+    background-color: white;
+    padding: 20px;
+    margin: 20px;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#user-info {
+    width: 30%;
+    height: 100%;
+}
+
+#game-stats {
+    flex-grow: 1;
+    text-align: start;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.profile-section h2 {
+    margin-bottom: 10px;
+    font-size: 1.8em;
+    font-weight: 500;
+}
+
+.profile-section p {
+    margin: 5px 0;
+    font-size: 1.2em;
+    color: #6e6e73;
+}
