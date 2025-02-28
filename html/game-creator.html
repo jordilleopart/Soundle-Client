@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Juego</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/login-signup.css">
+    <link rel="stylesheet" href="../css/game-creator.css">
+</head>
+<body>
+    <main>
+        <section class="game-creator-section">
+            <h2>Create Game</h2>
+            <form>
+                <div class="form-group">
+                    <label for="num-participants">Number of Participants:</label>
+                    <input type="range" id="num-participants" name="num-participants" min="2" max="25" value="10" class="slider">
+                    <span id="num-participants-value">10</span>
+                </div>
+                <div class="form-group">
+                    <label>Privacy:</label>
+                    <div class="privacy-buttons">
+                        <button type="button" id="public-btn" class="toggle-button active">
+                            <img src="../img/globe.png" alt="Público">
+                            Public
+                        </button>
+                        <button type="button" id="private-btn" class="toggle-button">
+                            <img src="../img/lock.fill.png" alt="Privado">
+                            Private
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="toggle-button">
+                    Crear Juego
+                </button>
+            </form>
+        </section>
+    </main>
+    <script src="../js/game-creator.js"></script>
+</body>
+</html>
