@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Challenge 2000</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/game.css">
 </head>
@@ -11,52 +10,128 @@
     <main>
         <header>
             <h1>Game Template</h1>
-            <a href="profile.html" class="profile-button">
-                <img src="../img/person.crop.circle.fill-b.png">
-            </a>
         </header>
-
-        <div class="challenge-container">
+        <div class="game-container">
+            <div class="leaderboard">
+                <div class="panel-header">
+                    <span>Leaderboard</span>
+                </div>
+                <div class="leaderboard-list">
+                    <div class="user-row">
+                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 1" class="profile-pic">
+                        <div class="user-details">
+                            <div class="user-info">
+                                <p class="username">User 1</p>
+                                <p class="points">1000</p>
+                            </div>
+                            <div class="attempts">
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-row">
+                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 2" class="profile-pic">
+                        <div class="user-details">
+                            <div class="user-info">
+                                <p class="username">User 2</p>
+                                <p class="points">999</p>
+                            </div>
+                            <div class="attempts">
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-row">
+                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 3" class="profile-pic">
+                        <div class="user-details">
+                            <div class="user-info">
+                                <p class="username">User 3</p>
+                                <p class="points">998</p>
+                            </div>
+                            <div class="attempts">
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-row">
+                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 4" class="profile-pic">
+                        <div class="user-details">
+                            <div class="user-info">
+                                <p class="username">User 4</p>
+                                <p class="points">997</p>
+                            </div>
+                            <div class="attempts">
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-row">
+                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 5" class="profile-pic">
+                        <div class="user-details">
+                            <div class="user-info">
+                                <p class="username">User 5</p>
+                                <p class="points">996</p>
+                            </div>
+                            <div class="attempts">
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                                <div class="attempt-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="challenge-container">
+                <div class="image-placeholder" id="album-container">
+                    <img id="track-image" src="" alt="Track Cover" class="hidden">
+                </div>
+                <div class="track-info" id="track-info">
+                    <p id="track-year" class="hidden">Release date: </p>
+                    <p id="track-artist" class="hidden">Artist: </p>
+                </div>
+            </div>
             <div class="error-container">
             </div>
-            <div class="image-placeholder" id="album-container">
-                <img id="track-image" src="" alt="Track Cover" class="hidden">
+        </div>        
+        <div class="controls">
+            <div class="audio-player">
+                <button id="shuffle-btn">
+                    <img src="../img/shuffle.png" alt="Shuffle">
+                </button>
+                <button id="play-btn">
+                    <img id="play-icon" src="../img/play.fill.png" alt="Play">
+                </button>
+                <button id="show-elements-btn">
+                    <img src="../img/forward.fill.png" alt="Show Elements">
+                </button>
             </div>
-        </div>
-        <div class="track-info" id="track-info">
-            <p id="track-year" class="hidden">Release date: </p>
-            <p id="track-artist" class="hidden">Artist: </p>
-        </div>
-        <div class="audio-player">
-            <button id="shuffle-btn">
-                <img src="../img/shuffle.png" alt="Shuffle">
-            </button>
-            <button id="play-btn">
-                <img id="play-icon" src="../img/play.fill.png" alt="Play">
-            </button>
-            <button id="show-elements-btn">
-                <img src="../img/forward.fill.png" alt="Show Elements">
-            </button>
-        </div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Input">
-        </div>
-        <div class="attempts">
-            <div class="attempt-box"></div>
-            <div class="attempt-box"></div>
-            <div class="attempt-box"></div>
-            <div class="attempt-box"></div>
-        </div>
-        <div id="audio-player-container">
-            <iframe id="player" width="0" height="0" 
-                    src="" 
-                    frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Input">
+            </div>
+            <progress class="progress" value="15" max="100">15%</progress>
+            <div id="audio-player-container">
+                <iframe id="player" width="0" height="0" 
+                        src="" 
+                        frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
         </div>
     </main>
     <script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
     <script defer src="../js/game.js"></script>
 </body>
-
 </html>

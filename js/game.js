@@ -2,11 +2,11 @@ const address = "http://localhost:3000";
 let currentStep = 0;
 
 // Global variables for track information (predetermined values)
-let trackArtist = "Frank Ocean";
-let releaseDate = "2016-08-20";
-let trackImage = "https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526";
-let trackName = "Godspeed";
-let urlYouTube = "https://www.youtube.com/watch?v=P18g4rKns6Q";
+let trackArtist = "The Weeknd";
+let releaseDate = "2025-01-31";
+let trackImage = "https://i.scdn.co/image/ab67616d0000b2737e7f1d0bdb2bb5a2afc4fb25";
+let trackName = "Cry for Me";
+let urlYouTube = "https://www.youtube.com/watch?v=bn8gP5N8hqM";
 let player;
 
 let startTime = 50; // Guardamos el tiempo inicial en el que comienza el video
