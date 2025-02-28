@@ -54,8 +54,6 @@ signupForm.addEventListener('submit', (event) => {
         }
     });
 
-    console.log(JSON.stringify(formData));
-
     // Check if password is valid
     if (!validatePassword(formData.password)) {
         // Display error message if password is invalid
