@@ -1,9 +1,0 @@
-{
-    "liveServer.settings.port": 5500,
-    "liveServer.settings.https": {
-      "enable": true,
-      "cert": "/Users/jordilleopart/localhost-cert.pem",
-      "key": "/Users/jordilleopart/localhost-key.pem",
-      "passphrase": ""
-    }
-  }
