@@ -14,18 +14,60 @@ body {
 
 /* Container */
 .container {
-    width: 60%;
+    width: 75%; /* Increase container width to make the selects fit in a single line */
     margin: auto;
     text-align: left;
 }
 
 /* Header */
+h1 {
+    padding: 30px 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    flex-wrap: wrap; /* Allows wrapping for smaller screens */
+    padding: 20px 0;
     background-color: #f5f5f7;
+}
+
+/* Filter Containers */
+.filter-container {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    flex-direction: row;
+    width: calc(50% - 10px); /* Adjust filter-container width so they take up 50% of the container */
+}
+
+/* Labels above selects */
+.filter-container label {
+    margin-right: 10px;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: auto;
+}
+
+/* Sort and Filter Section */
+.header .filter-container {
+    flex-basis: 45%;
+    justify-content: flex-start;
+}
+
+/* Ensuring the selects and buttons fit in a row */
+#sortBy, #columnSelect {
+    width: 180px; /* Ensures selects fit nicely */
+}
+
+input {
+    width: 150px;
 }
 
 /* Inputs and Buttons */
@@ -40,14 +82,44 @@ select, input, button {
     text-align: center;
 }
 
-input:focus {
+button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Apply style to the Sort Order Button */
+.sort-btn {
+    margin-left: 10px;
+    background-color: #28a745; /* Green for Ascending */
+}
+
+.sort-btn.descending {
+    background-color: #dc3545; /* Red for Descending */
+}
+
+.sort-btn:hover {
+    background-color: #218838; /* Darker green for Ascending */
+}
+
+.sort-btn.descending:hover {
+    background-color: #c82333; /* Darker red for Descending */
+}
+
+input:focus, select:focus {
     outline: none;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Challenges Section */
 .challenges {
-    margin-top: 40px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -67,3 +139,41 @@ input:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Pagination Info at the top right */
+.pagination-info {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* Pagination Section at the bottom */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Centering Page info at the bottom */
+.pagination-center {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    font-size: 16px;
+}

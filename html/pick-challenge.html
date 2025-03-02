@@ -11,17 +11,49 @@
     <h1>Available Challenges</h1>
     <div class="container">
         <div class="header">
-            <select id="filter">
-                <option value="">Select</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select>
-            <input type="text" id="search" placeholder="Search">
-            <button onclick="playRandom()">Play Random</button>
+            <!-- Sort By Dropdown with label on top -->
+            <div class="filter-container">
+                <label for="sortBy">Sort By:</label>
+                <select id="sortBy">
+                    <option value="">None</option>
+                    <option value="name">Players</option>
+                    <option value="date">Rounds</option>
+                    <option value="difficulty">Creation Date</option>
+                </select>
+                <button id="sortOrderButton" class="sort-btn">Ascending</button>
+                <button id="sortApplyButton">Apply</button>
+            </div>
+
+            <!-- Filter By Dropdown and Input with label on top -->
+            <div class="filter-container">
+                <label for="columnSelect">Filter By:</label>
+                <select id="columnSelect">
+                    <option value="">None</option>
+                    <option value="name">Creator</option>
+                    <option value="date">Playlist</option>
+                    <option value="difficulty">Type</option>
+                </select>
+                <input type="text" id="search" placeholder="Search">
+                <button id="filterApplyButton">Apply</button>
+            </div>
         </div>
+
+        <!-- Range of results and current page info -->
+        <div class="pagination-info">
+            <span id="rangeDisplay">Showing 1–5 of 20 results</span> 
+        </div>
+
         <div class="challenges" id="challengeList">
             <!-- Challenges will be added dynamically -->
+        </div>
+
+        <!-- Pagination Section at the bottom -->
+        <div class="pagination">
+            <button id="prevPage" class="pagination-btn">← Previous</button>
+            <div class="pagination-center">
+                <span id="currentPage">Page 1 of 4</span>
+            </div>
+            <button id="nextPage" class="pagination-btn">Next →</button>
         </div>
     </div>
     
