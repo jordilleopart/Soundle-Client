@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Juego</title>
+    <title>Soundle - Create Game</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/game.css">
     <link rel="stylesheet" href="../css/login-signup.css">
@@ -13,11 +13,15 @@
     <main>
         <section class="game-creator-section">
             <h2>Create Game</h2>
-            <form>
+            <form id="create-form">
                 <div class="form-group">
                     <label for="num-participants">Number of Participants:</label>
                     <input type="range" id="num-participants" name="num-participants" min="2" max="25" value="10" class="slider">
                     <span id="num-participants-value">10</span>
+                </div>
+                <div class="form-group">
+                    <label for="num-rounds">Number of Rounds:</label>
+                    <input type="number" id="num-rounds" name="num-rounds" min="1" max="20" value="5" class="input-field">
                 </div>
                 <div class="form-group">
                     <label>Privacy:</label>
@@ -33,7 +37,7 @@
                     </div>
                 </div>
                 <button type="submit" class="toggle-button">
-                    Crear Juego
+                    Continue
                 </button>
             </form>
         </section>
