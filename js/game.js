@@ -1,4 +1,5 @@
 const address = "http://localhost:3000";
+const socket = new WebSocket('ws://localhost:3000');
 let currentStep = 0;
 
 // Global variables for track information (predetermined values)
@@ -187,6 +188,8 @@ function checkUserInput(userInput) {
 
     if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
         const errorBox = document.createElement('div');
+        
+        //this would be needed when all is connected to the websocket
         errorBox.classList.add('error-box');
         errorBox.textContent = userInput;
         document.querySelector('.error-container').appendChild(errorBox);
@@ -196,18 +199,61 @@ function checkUserInput(userInput) {
         revealNextTrackElement();
 
         //TODO: SEND MESSAGE TO SERVER
+        socket.send(JSON.stringify({ type: 'message', data: userInput }));
 
     } else {
+
+        //this would be needed when all is connected to the websocket
         const correctBox = document.createElement('div');
         correctBox.classList.add('correct-box');
         correctBox.textContent = trackName;
         document.querySelector('.error-container').appendChild(correctBox);
         attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
-        guessesLeft = 0; // Stop the game when the user guesses correctly
+        
+        // Stop the game when the user guesses correctly
+        guessesLeft = 0; 
 
-        //TODO: SEND MESSAGE TO SERVER
+        //TODO: SEND GUESSED TO SERVER
+        socket.send(JSON.stringify({ type: 'guessed', data: "username has guessed the track" })); //this has to be change to add the username dyanmically
     }
 }
+
+
+// WebSocket event listeners
+socket.addEventListener('open', function (event) {
+    console.log('Connected to WebSocket server');
+});
+
+socket.addEventListener('message', function (event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'message') {
+        showMessages([data.message]);
+    }
+    else if (data.type === 'guessed') {
+        showGuessed([data.guessed]);
+    }
+});
+
+function showMessages(messages) {
+    const chatMessages = document.querySelector('.chat-messages');
+    messages.forEach(message => {
+        const messageItem = document.createElement('div');
+        messageItem.classList.add('message-sent');
+        messageItem.textContent = message;
+        chatMessages.appendChild(messageItem);
+    });
+}
+
+function showGuessed(guesses) {
+    const chatMessages = document.querySelector('.chat-messages');
+    guesses.forEach(guess => {
+        const messageItem = document.createElement('div');
+        messageItem.classList.add('message-correct');
+        messageItem.textContent = guess;
+        chatMessages.appendChild(messageItem);
+    });
+}
+
 
 // Event listener for the Enter key to submit user input
 document.getElementById('user-input').addEventListener('keydown', function(event) {
@@ -224,50 +270,63 @@ document.getElementById('user-input').addEventListener('keydown', function(event
 updateTrackInfo(trackArtist, releaseDate, trackImage, trackName, urlYouTube);
 
 // Function to add a user to the leaderboard
-function addUserToLeaderboard(username, points, attempts) {
+function showUsersWithLeaderboard(users) {
     const leaderboardList = document.querySelector('.leaderboard-list');
+    const userList = document.createElement('div');
+    userList.classList.add('user-list');
 
-    const userRow = document.createElement('div');
-    userRow.classList.add('user-row');
+    users.forEach(user => {
+        // Create user item for chat
+        const userItem = document.createElement('div');
+        userItem.classList.add('user-item');
+        userItem.textContent = user.username;
+        userList.appendChild(userItem);
 
-    const profilePic = document.createElement('img');
-    profilePic.src = "../img/person.crop.circle.fill-grey.png";
-    profilePic.alt = username;
-    profilePic.classList.add('profile-pic');
+        // Create user row for leaderboard
+        const userRow = document.createElement('div');
+        userRow.classList.add('user-row');
 
-    const userDetails = document.createElement('div');
-    userDetails.classList.add('user-details');
+        const profilePic = document.createElement('img');
+        profilePic.src = "../img/person.crop.circle.fill-grey.png";
+        profilePic.alt = user.username;
+        profilePic.classList.add('profile-pic');
 
-    const userInfo = document.createElement('div');
-    userInfo.classList.add('user-info');
+        const userDetails = document.createElement('div');
+        userDetails.classList.add('user-details');
 
-    const usernameElem = document.createElement('p');
-    usernameElem.classList.add('username');
-    usernameElem.textContent = username;
+        const userInfo = document.createElement('div');
+        userInfo.classList.add('user-info');
 
-    const pointsElem = document.createElement('p');
-    pointsElem.classList.add('points');
-    pointsElem.textContent = points;
+        const usernameElem = document.createElement('p');
+        usernameElem.classList.add('username');
+        usernameElem.textContent = user.username;
 
-    userInfo.appendChild(usernameElem);
-    userInfo.appendChild(pointsElem);
+        const pointsElem = document.createElement('p');
+        pointsElem.classList.add('points');
+        pointsElem.textContent = user.points;
 
-    const attemptsElem = document.createElement('div');
-    attemptsElem.classList.add('attempts');
+        userInfo.appendChild(usernameElem);
+        userInfo.appendChild(pointsElem);
 
-    for (let i = 0; i < attempts; i++) {
-        const attemptBox = document.createElement('div');
-        attemptBox.classList.add('attempt-box');
-        attemptsElem.appendChild(attemptBox);
-    }
+        const attemptsElem = document.createElement('div');
+        attemptsElem.classList.add('attempts');
 
-    userDetails.appendChild(userInfo);
-    userDetails.appendChild(attemptsElem);
+        for (let i = 0; i < user.attempts; i++) {
+            const attemptBox = document.createElement('div');
+            attemptBox.classList.add('attempt-box');
+            attemptsElem.appendChild(attemptBox);
+        }
 
-    userRow.appendChild(profilePic);
-    userRow.appendChild(userDetails);
+        userDetails.appendChild(userInfo);
+        userDetails.appendChild(attemptsElem);
 
-    leaderboardList.appendChild(userRow);
+        userRow.appendChild(profilePic);
+        userRow.appendChild(userDetails);
+
+        leaderboardList.appendChild(userRow);
+    });
+
+    chatPanel.appendChild(userList);
 }
 
 // Example usage
@@ -290,4 +349,34 @@ document.addEventListener('DOMContentLoaded', () => {
 showUsers()
 showMessages()
 sendMessage()
+
+// Function to update user points in the leaderboard
+function updateUserPoints(username, newPoints) {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const usernameElem = row.querySelector('.username');
+        if (usernameElem && usernameElem.textContent === username) {
+            const pointsElem = row.querySelector('.points');
+            if (pointsElem) {
+                pointsElem.textContent = newPoints;
+            }
+        }
+    });
+}
+
+// Function to show users in the chat
+function showUsers(users) {
+    const chatPanel = document.querySelector('.chat-panel');
+    const userList = document.createElement('div');
+    userList.classList.add('user-list');
+    users.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.classList.add('user-item');
+        userItem.textContent = user;
+        userList.appendChild(userItem);
+    });
+    chatPanel.appendChild(userList);
+}
 */
+
+
