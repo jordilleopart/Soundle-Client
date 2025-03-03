@@ -8,90 +8,13 @@
 </head>
 <body>
     <main>
-        <header>
-            <h1>Game Template</h1>
-        </header>
         <div class="game-container">
             <div class="leaderboard">
                 <div class="panel-header">
-                    <span>Leaderboard</span>
+                    <span>User in game</span>
                 </div>
                 <div class="leaderboard-list">
-                    <div class="user-row">
-                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 1" class="profile-pic">
-                        <div class="user-details">
-                            <div class="user-info">
-                                <p class="username">User 1</p>
-                                <p class="points">1000</p>
-                            </div>
-                            <div class="attempts">
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="user-row">
-                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 2" class="profile-pic">
-                        <div class="user-details">
-                            <div class="user-info">
-                                <p class="username">User 2</p>
-                                <p class="points">999</p>
-                            </div>
-                            <div class="attempts">
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="user-row">
-                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 3" class="profile-pic">
-                        <div class="user-details">
-                            <div class="user-info">
-                                <p class="username">User 3</p>
-                                <p class="points">998</p>
-                            </div>
-                            <div class="attempts">
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="user-row">
-                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 4" class="profile-pic">
-                        <div class="user-details">
-                            <div class="user-info">
-                                <p class="username">User 4</p>
-                                <p class="points">997</p>
-                            </div>
-                            <div class="attempts">
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="user-row">
-                        <img src="../img/person.crop.circle.fill-grey.png" alt="User 5" class="profile-pic">
-                        <div class="user-details">
-                            <div class="user-info">
-                                <p class="username">User 5</p>
-                                <p class="points">996</p>
-                            </div>
-                            <div class="attempts">
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                                <div class="attempt-box"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- User rows will be added dynamically here -->
                 </div>
             </div>
             <div class="challenge-container">
@@ -102,33 +25,58 @@
                     <p id="track-year" class="hidden">Release date: </p>
                     <p id="track-artist" class="hidden">Artist: </p>
                 </div>
+                <div class="controls">
+                    <div class="audio-player">
+                        <button id="shuffle-btn">
+                            <img src="../img/shuffle.png" alt="Shuffle">
+                        </button>
+                        <button id="play-btn">
+                            <img id="play-icon" src="../img/play.fill.png" alt="Play">
+                        </button>
+                        <button id="show-elements-btn">
+                            <img src="../img/forward.fill.png" alt="Show Elements">
+                        </button>
+                    </div>
+                    <div class="attempts">
+                        <div class="attempt-box"></div>
+                        <div class="attempt-box"></div>
+                        <div class="attempt-box"></div>
+                        <div class="attempt-box"></div>
+                    </div>
+                    <div class="input-container">
+                        <input type="text" id="user-input" placeholder="Type your guess here...">
+                    </div>
+                    <progress class="progress" value="15" max="50"></progress>
+                    <div id="audio-player-container">
+                        <iframe id="player" width="0" height="0" 
+                                src="" 
+                                frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-panel">
+                <div class="panel-header">
+                    <span>Chat</span>
+                    <span>x</span>
+                </div>
+                <div class="chat-messages">
+                    <!-- Mensajes de ejemplo -->
+                    <div class="message received">username1: Hello, how are you?</div>
+                    <div class="message sent">username2: I'm good, thanks! How about you?</div>
+                    <div class="message received">username3: I'm doing great, just waiting for the game to start!</div>
+                    <div class="message correct">username has guessed the song</div>
+                    
+                </div>
+                <!--<div class="chat-input">
+                    <input type="text" placeholder="Type a message...">
+                    <button>Send</button>
+                </div>-->
             </div>
             <div class="error-container">
             </div>
         </div>        
-        <div class="controls">
-            <div class="audio-player">
-                <button id="shuffle-btn">
-                    <img src="../img/shuffle.png" alt="Shuffle">
-                </button>
-                <button id="play-btn">
-                    <img id="play-icon" src="../img/play.fill.png" alt="Play">
-                </button>
-                <button id="show-elements-btn">
-                    <img src="../img/forward.fill.png" alt="Show Elements">
-                </button>
-            </div>
-            <div class="input-container">
-                <input type="text" id="user-input" placeholder="Input">
-            </div>
-            <progress class="progress" value="15" max="100">15%</progress>
-            <div id="audio-player-container">
-                <iframe id="player" width="0" height="0" 
-                        src="" 
-                        frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                </iframe>
-            </div>
         </div>
     </main>
     <script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
