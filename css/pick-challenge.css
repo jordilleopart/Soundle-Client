@@ -148,44 +148,38 @@ input:focus, select:focus {
 .challenge .game-details {
     flex-grow: 1; /* Game ID and Creator take more space */
     text-align: left; /* Align text to the left */
-    font-size: 18px; /* Larger font for game details */
+    font-size: 14px; /* Smaller font for game details */
     display: flex;
     flex-direction: row;
-    gap: 15px; /* Adds space between game ID and creator */
+    gap: 10px; /* Adds space between game ID and creator */
 }
 
-.challenge .game-details span {
-    margin-right: 0; /* No extra margin here, it's controlled by the gap */
+.challenge .game-id,
+.challenge .game-creator {
+    font-size: 12px; /* Smaller font for game ID and creator */
 }
 
 .challenge .game-details strong {
     font-weight: bold; /* Make the game creator bold */
 }
 
+/* Adjusted layout for players, rounds, and creation date */
 .challenge .game-stats {
     display: flex;
     flex-grow: 2; /* Stats take more space */
     justify-content: flex-end;
     align-items: center;
-    font-size: 14px; /* Smaller font for stats */
+    font-size: 14px; /* Same font size for stats */
+    gap: 15px; /* Space between players, rounds, and creation time */
 }
 
-.challenge .button {
-    margin-left: 10px;
+.challenge .game-stats .creation-time {
+    font-size: 14px; /* Same size as other stats like players */
+    color: #6c757d; /* Muted color */
 }
 
-.challenge .button a {
-    text-decoration: none;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.challenge .button a:hover {
-    background-color: #0056b3;
+.challenge .game-stats span {
+    margin-left: 10px; /* Space between each stat */
 }
 
 /* Game Type Display */

@@ -1,9 +1,12 @@
+
+// CHECK FIRST IF USER IS LOGGEDDD
+
+
 var ordering = "Ascending";
 const sortColumn = document.getElementById('sortBy');
 const filterColumn = document.getElementById('filterBy');
 const searchInput = document.getElementById('search');
 const list = document.getElementById("challengeList");
-
 
 // Used to map frontend values to backend SQL table definitions
 const mapping = {
@@ -50,11 +53,22 @@ function showChallenges(results) {
 
         const gameId = document.createElement("span");
         gameId.textContent = `${challenge.game_id}`;
+        gameId.classList.add("game-id");  // Added class for styling
         gameDetails.appendChild(gameId);
 
         const gameCreator = document.createElement("strong");
-        gameCreator.textContent = ` by ${challenge.game_creator}`;
+        gameCreator.textContent = ` by ${challenge.user_name}`;
         gameDetails.appendChild(gameCreator);
+
+        // Create and display the creation time (hh:mm:ss format)
+        const creationTime = document.createElement("span");
+        creationTime.classList.add("creation-time");
+        const creationDate = new Date(challenge.creation_date);
+        const hours = creationDate.getHours().toString().padStart(2, '0');
+        const minutes = creationDate.getMinutes().toString().padStart(2, '0');
+        const seconds = creationDate.getSeconds().toString().padStart(2, '0');
+        creationTime.textContent = `Created at: ${hours}:${minutes}:${seconds}`;
+        gameDetails.appendChild(creationTime);
 
         challengeDiv.appendChild(gameDetails);
 
@@ -84,16 +98,21 @@ function showChallenges(results) {
         const buttonDiv = document.createElement("div");
         buttonDiv.classList.add("button");
 
-        const button = document.createElement("a");
-        button.href = `lobby.html?game_id=${challenge.game_id}`;
+        // Create a button instead of a link for the lobby
+        const button = document.createElement("button");
         button.textContent = "Enter Lobby";
-        
-        // Check if game is private, add click handler for private games
+        button.classList.add("enter-lobby-button");
+
+        // Handle click event for private games
         if (challenge.game_type === 'private') {
             button.classList.add('private-button');
             button.addEventListener('click', (event) => {
                 event.preventDefault();
-                showGameCodePopup(challenge.game_id);
+                showGameCodePopup(challenge.game_id);  // Show the game code popup for private games
+            });
+        } else {
+            button.addEventListener('click', () => {
+                window.location.href = `lobby.html?game_id=${challenge.game_id}`;  // Redirect to the lobby for public games
             });
         }
 
@@ -191,7 +210,6 @@ function showGameCodePopup(gameId) {
     });
 }
 
-
 // Function to display a "No Results" message
 function showNoResults() {
     // Clear the current list of challenges
@@ -239,6 +257,7 @@ async function fetchAvailableChallenges(path) {
         }
     })
     .then(data => {
+        updatePaginationResults(data.pagination);
         return data.games;
     })
     .catch((error) => {
@@ -250,6 +269,15 @@ async function fetchAvailableChallenges(path) {
     });
 
 };
+
+function updatePaginationResults(pagination) {
+    // update page X of X
+    document.getElementById("currentPage").innerText = `Page ${pagination.pageNumber} of ${pagination.totalPages}`;
+    // update showing x-x of x results
+    const firstResultNum = pagination.pageSize * (pagination.pageNumber-1) + 1;
+    const lastResultNum = firstResultNum + pagination.pageSize;
+    document.getElementById("rangeDisplay").innerText = `Showing ${firstResultNum}-${lastResultNum} of ${pagination.totalCount} results`
+}
 
 // Handle sort order button click
 document.getElementById('sortOrderButton').addEventListener('click', function() { toggleSortOrder(this); });
