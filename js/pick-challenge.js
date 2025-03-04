@@ -8,6 +8,11 @@ const filterColumn = document.getElementById('filterBy');
 const searchInput = document.getElementById('search');
 const list = document.getElementById("challengeList");
 
+// store the last requested path
+var currentPath = '';
+var currentPage = 1;
+var maxPage = 1;
+
 // Used to map frontend values to backend SQL table definitions
 const mapping = {
     "Ascending": "ASC",
@@ -228,6 +233,22 @@ function showNoResults() {
     list.appendChild(noResultsDiv);
 }
 
+async function moveToPage(pageNumber) {
+    // create corresponding path with page specified
+    const path = currentPath + `&pageNumber=${pageNumber}`;
+
+    // request to backend challenges with the given sorting
+    const results = await fetchAvailableChallenges(path);
+
+    // Check if any result
+    if (results.length > 0) {
+        showChallenges(results);
+    } else {
+        // Display no results obtained
+        showNoResults();
+    }
+}
+
 async function fetchAvailableChallenges(path) {
 
     // Get the JWT token from local storage
@@ -271,11 +292,12 @@ async function fetchAvailableChallenges(path) {
 };
 
 function updatePaginationResults(pagination) {
+    maxPage = pagination.totalPages;
     // update page X of X
     document.getElementById("currentPage").innerText = `Page ${pagination.pageNumber} of ${pagination.totalPages}`;
     // update showing x-x of x results
     const firstResultNum = pagination.pageSize * (pagination.pageNumber-1) + 1;
-    const lastResultNum = firstResultNum + pagination.pageSize;
+    const lastResultNum = firstResultNum + (pagination.pageSize-1);
     document.getElementById("rangeDisplay").innerText = `Showing ${firstResultNum}-${lastResultNum} of ${pagination.totalCount} results`
 }
 
@@ -294,6 +316,8 @@ document.getElementById('sortApplyButton').addEventListener('click', async funct
     resetFilterValues();
 
     const path = `sort?sortBy=${sortColumn.value}&sortOrder=${mapping[ordering]}`;
+
+    currentPath = path;
 
     // request to backend challenges with the given sorting
     const results = await fetchAvailableChallenges(path);
@@ -324,6 +348,8 @@ document.getElementById('filterApplyButton').addEventListener('click', async fun
 
         const path = `filter?filterBy=${filterColumn.value}&filterValue=${encodeURIComponent(searchInput.value)}`;
 
+        currentPath = path;
+
         // request to backend challenges with the given filter
         const results = await fetchAvailableChallenges(path);
 
@@ -338,5 +364,23 @@ document.getElementById('filterApplyButton').addEventListener('click', async fun
     } else {
         // Input is empty, show "error"
         searchInput.classList.add('input-error');
+    }
+});
+
+// handle previous and next buttons
+document.getElementById("prevPage").addEventListener('click', function() {
+    // check if we can go to previous page
+    if (currentPage-1 >= 1) {
+        currentPage -= 1;
+        moveToPage(currentPage);
+    }
+});
+
+// handle previous and next buttons
+document.getElementById("nextPage").addEventListener('click', function() {
+    // check if we can go to next page
+    if (currentPage+1 <= maxPage) {
+        currentPage += 1;
+        moveToPage(currentPage);
     }
 });
