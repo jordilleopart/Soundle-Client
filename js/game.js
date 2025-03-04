@@ -23,24 +23,33 @@ const elements = [
 const attemptBoxes = document.querySelectorAll('.attempt-box');
 
 // Function to update global track variables and update the HTML content
-function updateTrackInfo(artist, date, image, name, youtubeUrl) {
+function updateTrackInfo(artist, releaseDate, coverUrl, name, trackAudioBase64) {
+    // Update global variables
     trackArtist = artist;
-    releaseDate = date;
-    trackImage = image;
     trackName = name;
-    urlYouTube = youtubeUrl;
+    trackImage = coverUrl;
+    releaseDate = releaseDate;
 
-    // Format the release date to display only the date
+    // Update track artist
+    const trackArtistElem = document.getElementById('track-artist');
+    trackArtistElem.textContent = `Artist: ${artist}`;
+    //trackArtistElem.classList.remove('hidden');
+
+    // Update track release date
+    const trackYearElem = document.getElementById('track-year');
     const formattedDate = new Date(releaseDate).toLocaleDateString('en-GB'); // 'en-GB' for day/month/year format
+    trackYearElem.textContent = `Release date: ${formattedDate}`;
+    //trackYearElem.classList.remove('hidden');
 
-    // Update the track information in the UI (but keep the image hidden)
-    document.getElementById('track-artist').textContent = `Artist: ${trackArtist}`;
-    document.getElementById('track-year').textContent = `Release date: ${formattedDate}`;
-    document.getElementById('track-image').src = trackImage;
+    // Update track cover image
+    const trackImageElem = document.getElementById('track-image');
+    trackImageElem.src = coverUrl;
+    //trackImageElem.classList.remove('hidden');
 
-    // Extract YouTube video ID and update the embedded player
-    const videoId = extractYouTubeId(urlYouTube);
-    updateYouTubePlayer(videoId);
+    // Update audio player source
+    const audioPlayerElem = document.getElementById('audio-player');
+    audioPlayerElem.src = `data:audio/mp3;base64,${trackAudioBase64}`;
+    audioPlayerElem.load(); // Reload the audio element to apply the new source
 }
 
 // Function to reveal the next track element
@@ -68,6 +77,7 @@ document.getElementById('shuffle-btn').addEventListener('click', function() {
 
     // Reset the currentStep to 0 to start the track element sequence from the beginning
     currentStep = 0;
+    guessesLeft = 4;
 
     // Hide all elements initially before revealing them again
     elements.forEach(element => element.classList.add('hidden'));
@@ -96,36 +106,13 @@ document.getElementById('shuffle-btn').addEventListener('click', function() {
             data.track_release_date,   
             data.track_cover_url,      
             data.track_name,           
-            data.track_preview_url   
+            data.track_audio_path
         );
     })
     .catch(error => console.error('Error fetching data:', error));
 });
 
-// We don't need this if we pass the ID instead of the URL on the API call
-// Function to extract the YouTube video ID from a given URL
-function extractYouTubeId(url) {
-    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-}
 
-// Function to update the YouTube iframe with the new video ID
-function updateYouTubePlayer(videoId) {
-    if (videoId) {
-        document.getElementById('player').src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-    }
-}
-
-// This function is called by the YouTube IFrame API when it's ready
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-}
 
 // This function is called when the player is ready
 function onPlayerReady(event) {
@@ -153,23 +140,28 @@ function onPlayerStateChange(event) {
 // Function to toggle play/pause
 function togglePlayPause() {
     const playButtonIcon = document.getElementById('play-icon');
-    if (player) {
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-            // Change the icon to pause when the video starts playing
+    const audioPlayer = document.getElementById('audio-player');
+    if (audioPlayer) {
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            // Change the icon to pause when the audio starts playing
             playButtonIcon.src = '../img/pause.fill.png';
-            // Set a timeout to pause the video after x seconds
+            // Set a timeout to pause the audio after x seconds
             setTimeout(() => {
-                player.pauseVideo();
+                audioPlayer.pause();
                 playButtonIcon.src = '../img/play.fill.png'; // Change icon back to play
-                // Revert the video to the start time (second 30) after pausing
-                player.seekTo(startTime);
-            }, audio_duration*1000); // Pause after x seconds
+                // Revert the audio to the start time (second 30) after pausing
+                audioPlayer.currentTime = startTime;
+            }, audio_duration * 1000); // Pause after x seconds
+        } else {
+            audioPlayer.pause();
+            // Change the icon back to play when the audio is paused
+            playButtonIcon.src = '../img/play.fill.png';
+            // Revert the audio to the start time (second 30) when it is paused
+            audioPlayer.currentTime = startTime;
         }
     } else {
-        console.log('Player is not initialized yet');
+        console.log('Audio player is not initialized yet');
     }
 }
 
@@ -329,13 +321,56 @@ function showUsersWithLeaderboard(users) {
     chatPanel.appendChild(userList);
 }
 
+// Function to update user points in the leaderboard
+function updateUserPoints(username, newPoints) {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const usernameElem = row.querySelector('.username');
+        if (usernameElem && usernameElem.textContent === username) {
+            const pointsElem = row.querySelector('.points');
+            if (pointsElem) {
+                pointsElem.textContent = newPoints;
+            }
+        }
+    });
+}
+
+function updateAttempts(username, attempts) {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const usernameElem = row.querySelector('.username');
+        if (usernameElem && usernameElem.textContent === username) {
+            const attemptsElems = row.querySelectorAll('.attempt-box');
+            attemptsElems.forEach((attemptElem, index) => {
+                if (index < attempts.correct) {
+                    attemptElem.classList.add('correct-box');
+                    attemptElem.classList.remove('error-box');
+                } else if (index < attempts.correct + attempts.incorrect) {
+                    attemptElem.classList.add('error-box');
+                    attemptElem.classList.remove('correct-box');
+                } else {
+                    attemptElem.classList.remove('correct-box', 'error-box');
+                }
+            });
+        }
+    });
+}
+
 // Example usage
 document.addEventListener('DOMContentLoaded', () => {
-    addUserToLeaderboard('User 1', 1000, 0);
-    addUserToLeaderboard('User 2', 999, 0);
-    addUserToLeaderboard('User 1', 1000, 0);
-    addUserToLeaderboard('User 2', 999, 0);
-    addUserToLeaderboard('User 1', 1000, 0);
+    const users = [
+        { username: 'Username', points: 100, attempts: 0 },
+        { username: 'Username2', points: 80, attempts: 0 },
+        { username: 'Username3', points: 65, attempts: 0 },
+        { username: 'Username3', points: 90, attempts: 0 },
+        { username: 'Username4', points: 25, attempts: 0 },
+        { username: 'Username6', points: 40, attempts: 0 },
+        { username: 'Username4', points: 95, attempts: 0 },
+        { username: 'Username6', points: 55, attempts: 0 },
+    ];
+    showUsersWithLeaderboard(users);
+    
+    
     
 
     // Assuming you have a global variable for game progress
@@ -350,19 +385,7 @@ showUsers()
 showMessages()
 sendMessage()
 
-// Function to update user points in the leaderboard
-function updateUserPoints(username, newPoints) {
-    const userRows = document.querySelectorAll('.user-row');
-    userRows.forEach(row => {
-        const usernameElem = row.querySelector('.username');
-        if (usernameElem && usernameElem.textContent === username) {
-            const pointsElem = row.querySelector('.points');
-            if (pointsElem) {
-                pointsElem.textContent = newPoints;
-            }
-        }
-    });
-}
+
 
 // Function to show users in the chat
 function showUsers(users) {
@@ -378,5 +401,7 @@ function showUsers(users) {
     chatPanel.appendChild(userList);
 }
 */
+
+
 
 
