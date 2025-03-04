@@ -1,5 +1,3 @@
-const address = "http://localhost:3000"
-
 // Trigger login action in back-end in successful submit
 const loginForm = document.getElementById("login-form");
 loginForm.addEventListener('submit', (event) => {
@@ -18,7 +16,7 @@ loginForm.addEventListener('submit', (event) => {
     });
 
     // Send a POST request to the backend
-    fetch(`${address}/login`, {
+    fetch(`${config.address}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

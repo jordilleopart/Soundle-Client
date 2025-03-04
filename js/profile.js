@@ -1,5 +1,3 @@
-const address = "http://localhost:3000"
-
 /* Function triggered on page load, to check we have access to the page */
 document.addEventListener('DOMContentLoaded', function() {
 	// Get the 'username' parameter from the URL
@@ -9,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var finalAddress;
 
     if (decodedUsername !== 'null') finalAddress = `${address}/profile/${decodedUsername}`;     // 'null' between quotes because javascript is absolute trash and can't return null of correct type
-    else finalAddress = `${address}/profile/`;
+    else finalAddress = `${config.address}/profile/`;
 
     // Get the JWT token from local storage
     const token = localStorage.getItem('jwtToken');

@@ -1,5 +1,3 @@
-const address = "http://localhost:3000"
-
 // Function to get all URL parameters as an object
 function getUrlParameters() {
     const params = new URLSearchParams(window.location.search);
@@ -42,7 +40,7 @@ playlists.forEach(playlist => {
         };
 
         // Send request to back-end to create the game
-        fetch(`${address}/game/create`, {
+        fetch(`${config.address}/game/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Important for JSON payload
@@ -62,14 +60,14 @@ playlists.forEach(playlist => {
                         sessionStorage.setItem('customMessage', data.message);
                     });
                     // Redirect to error-template.html upon error
-                    window.location.href = 'error-template.html';
+                    // window.location.href = 'error-template.html';
                     break;
             }
         })
         .then(jsonData => {
 
             // creation of game was succesful, then join game
-            fetch(`${address}/game/join/${jsonData.gameId}`, {
+            fetch(`${config.address}/game/join/${jsonData.gameId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Important for JSON payload
@@ -84,6 +82,7 @@ playlists.forEach(playlist => {
                             // Move to corresponding lobby
                             window.location.href = `lobby.html?gameId=${data.gameId}`;
                         })
+                        break;
                     default:
                         // Handle other error responses (e.g., 422, 500, etc.)
                         response.json().then(data => {
@@ -91,7 +90,7 @@ playlists.forEach(playlist => {
                             sessionStorage.setItem('customMessage', data.message);
                         });
                         // Redirect to error-template.html upon error
-                        window.location.href = 'error-template.html';
+                        // window.location.href = 'error-template.html';
                         break;
                 }
             })
@@ -100,7 +99,7 @@ playlists.forEach(playlist => {
                 sessionStorage.setItem('httpStatus', 500);
                 sessionStorage.setItem('customMessage', "Internal Server Error");
                 // Redirect to error-template.html upon error
-                window.location.href = 'error-template.html';
+                // window.location.href = 'error-template.html';
             });
 
         })
@@ -109,7 +108,7 @@ playlists.forEach(playlist => {
             sessionStorage.setItem('httpStatus', 500);
             sessionStorage.setItem('customMessage', "Internal Server Error");
             // Redirect to error-template.html upon error
-            window.location.href = 'error-template.html';
+            // window.location.href = 'error-template.html';
         });
     });
 });

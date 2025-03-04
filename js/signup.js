@@ -1,5 +1,3 @@
-const address = "http://localhost:3000";
-
 // Used to ensure password contains at least one uppercase letter, one lowercase letter, one number, one special character, and is between 8-16 characters long
 // Returns true if password is valid, false otherwise
 function validatePassword(password) {
@@ -87,7 +85,7 @@ signupForm.addEventListener('submit', (event) => {
     }
 
     // Send a POST request to the backend
-    fetch(`${address}/signup`, {
+    fetch(`${config.address}/signup`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

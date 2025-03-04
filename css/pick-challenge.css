@@ -62,7 +62,7 @@ h1 {
 }
 
 /* Ensuring the selects and buttons fit in a row */
-#sortBy, #columnSelect {
+#sortBy, #filterBy {
     width: 180px; /* Ensures selects fit nicely */
 }
 
@@ -133,10 +133,59 @@ input:focus, select:focus {
     justify-content: space-between;
     align-items: center;
     border-radius: 10px;
-    width: 110%;
-    height: 60px;
+    width: 100%;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+}
+
+/* Challenge content (flex row layout) */
+.challenge span {
+    display: inline-block;
+    margin-right: 10px; /* Space between elements */
+}
+
+.challenge .game-details {
+    flex-grow: 1; /* Game ID and Creator take more space */
+    text-align: left; /* Align text to the left */
+    font-size: 18px; /* Larger font for game details */
+    display: flex;
+    flex-direction: row;
+    gap: 15px; /* Adds space between game ID and creator */
+}
+
+.challenge .game-details span {
+    margin-right: 0; /* No extra margin here, it's controlled by the gap */
+}
+
+.challenge .game-details strong {
+    font-weight: bold; /* Make the game creator bold */
+}
+
+.challenge .game-stats {
+    display: flex;
+    flex-grow: 2; /* Stats take more space */
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 14px; /* Smaller font for stats */
+}
+
+.challenge .button {
+    margin-left: 10px;
+}
+
+.challenge .button a {
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.challenge .button a:hover {
+    background-color: #0056b3;
 }
 
 /* Pagination Info at the top right */
@@ -176,4 +225,8 @@ input:focus, select:focus {
     display: flex;
     justify-content: center;
     font-size: 16px;
+}
+
+.input-error {
+    border-color: #D8000C !important;  /* Red border for inputs with errors */
 }
