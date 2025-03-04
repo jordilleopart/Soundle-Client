@@ -285,3 +285,6 @@ input:focus {
     border-radius: 10px 0 0 10px;
 }
 
+.toggle-button img {
+    height: 20px;
+}

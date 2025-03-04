@@ -46,7 +46,7 @@
                     <div class="input-container">
                         <input type="text" id="user-input" placeholder="Type your guess here...">
                     </div>
-                    <progress class="progress" value="15" max="50"></progress>
+                    <progress class="progress" id="audio-progress" value="0" max=""></progress>
                     <div id="audio-player-container">
                         <iframe id="player" width="0" height="0" 
                                 src="" 
@@ -64,14 +64,12 @@
                 </div>
                 <div class="chat-messages">
                     <!-- Mensajes de ejemplo -->
-                    <div class="message-sent">username1: Hello, how are you?</div>
-                    <div class="message-sent">username2: I'm good, thanks! How about you?</div>
-                    <div class="message-sent">username3: I'm doing great, just waiting for the game to start!</div>
-                    <div class="message-correct">username has guessed the song</div>
                 </div>
                 <div class="chat-input">
-                    <input type="text" placeholder="Type a message...">
-                    <button>Send</button>
+                    <input type="text" id="message-input" placeholder="Type a message...">
+                    <button type="button" id="send-btn" class="toggle-button">
+                        <img src="../img/paperplane.fill.png" alt="Privado">
+                    </button>
                 </div>
             </div>
             <div class="error-container">

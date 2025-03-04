@@ -113,10 +113,24 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%; /* max-width: 80px */
+    width: 100%; /* max-width: 80% */
     margin-bottom: 10px;
 }
-
+.message-incorrect {
+    background-color: #FB4B53;
+    color: white;
+    align-self: flex-start;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%; /* max-width: 80px */
+    margin-bottom: 10px;
+    text-align: center;
+}
+    
 .message-sent {
     background-color: #0071e3;
     color: white;
@@ -127,22 +141,24 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%; /* max-width: 80px */
+    max-width: 80%;
     margin-bottom: 10px;
+    text-align: initial;
 }
 
 .message-correct {
-    background-color: #4CD964;
+    background-color: #4CD964; 
     color: white;
     align-self: center;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 5px;
+    border-radius: 5px;
     font-size: 11px;
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%; /* max-width: 80px */
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .chat-input {
@@ -159,9 +175,9 @@ a:hover {
 }
 
 .chat-input button {
-    padding: 10px 20px;
+    padding: 9px;
     border: none;
-    border-radius: 10px;
+    border-radius: 30px;
     background-color: #0071e3;
     color: white;
     cursor: pointer;
