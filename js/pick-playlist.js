@@ -49,7 +49,6 @@ playlists.forEach(playlist => {
             body: JSON.stringify(payload) // Send the payload in the request body
         })
         .then(response => {
-            console.log(`1st response: ${response.status}`)
             switch (response.status) {
                 case 200:
                     return response.json();
@@ -60,14 +59,14 @@ playlists.forEach(playlist => {
                         sessionStorage.setItem('customMessage', data.message);
                     });
                     // Redirect to error-template.html upon error
-                    // window.location.href = 'error-template.html';
+                    window.location.href = 'error-template.html';
                     break;
             }
         })
         .then(jsonData => {
 
             // creation of game was succesful, then join game
-            fetch(`${config.address}/game/join/${jsonData.gameId}`, {
+            fetch(`${config.address}/game/join/${jsonData.gameId}?code=${jsonData.code}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Important for JSON payload
@@ -75,7 +74,6 @@ playlists.forEach(playlist => {
                 }
             })
             .then(response => {
-                console.log(`2nd response: ${response.status}`)
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
@@ -90,7 +88,7 @@ playlists.forEach(playlist => {
                             sessionStorage.setItem('customMessage', data.message);
                         });
                         // Redirect to error-template.html upon error
-                        // window.location.href = 'error-template.html';
+                        window.location.href = 'error-template.html';
                         break;
                 }
             })
@@ -99,7 +97,7 @@ playlists.forEach(playlist => {
                 sessionStorage.setItem('httpStatus', 500);
                 sessionStorage.setItem('customMessage', "Internal Server Error");
                 // Redirect to error-template.html upon error
-                // window.location.href = 'error-template.html';
+                window.location.href = 'error-template.html';
             });
 
         })
@@ -108,7 +106,7 @@ playlists.forEach(playlist => {
             sessionStorage.setItem('httpStatus', 500);
             sessionStorage.setItem('customMessage', "Internal Server Error");
             // Redirect to error-template.html upon error
-            // window.location.href = 'error-template.html';
+            window.location.href = 'error-template.html';
         });
     });
 });

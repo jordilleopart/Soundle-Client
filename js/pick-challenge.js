@@ -39,67 +39,158 @@ function toggleSortOrder(button) {
 
 // Function to display challenges on the page
 function showChallenges(results) {
-    // Clear the current list of challenges
     list.innerHTML = "";
 
-    // Iterate through the results (which should always be 5 elements)
     results.forEach(challenge => {
-        // Create the outer div for the challenge
         const challengeDiv = document.createElement("div");
         challengeDiv.classList.add("challenge");
 
-        // Create a span to hold the game id and game creator
         const gameDetails = document.createElement("span");
         gameDetails.classList.add("game-details");
 
-        // Create and append game id (no bold, no "Game ID:" text)
         const gameId = document.createElement("span");
         gameId.textContent = `${challenge.game_id}`;
         gameDetails.appendChild(gameId);
 
-        // Create and append game creator (in bold)
         const gameCreator = document.createElement("strong");
         gameCreator.textContent = ` by ${challenge.game_creator}`;
         gameDetails.appendChild(gameCreator);
 
         challengeDiv.appendChild(gameDetails);
 
-        // Create another span for displaying players, rounds, and playlist
         const gameStats = document.createElement("span");
         gameStats.classList.add("game-stats");
 
-        // Create and append players in the format numPlayers/maxPlayers
         const players = document.createElement("span");
         players.textContent = `${challenge.num_players}/${challenge.max_players} players`;
         gameStats.appendChild(players);
 
-        // Create and append rounds
         const rounds = document.createElement("span");
         rounds.textContent = `Rounds: ${challenge.rounds}`;
         gameStats.appendChild(rounds);
 
-        // Create and append playlist
         const playlist = document.createElement("span");
         playlist.textContent = `Playlist: ${challenge.playlist}`;
         gameStats.appendChild(playlist);
 
         challengeDiv.appendChild(gameStats);
 
-        // Create the button to enter the lobby
+        // Show game type (Public or Private)
+        const gameType = document.createElement("span");
+        gameType.textContent = challenge.game_type === 'private' ? "Private" : "Public";
+        gameType.classList.add(challenge.game_type === 'private' ? 'private' : 'public');
+        challengeDiv.appendChild(gameType);
+
         const buttonDiv = document.createElement("div");
         buttonDiv.classList.add("button");
 
         const button = document.createElement("a");
-        button.href = `lobby.html?game_id=${challenge.game_id}`; // Pass the game id in the URL
+        button.href = `lobby.html?game_id=${challenge.game_id}`;
         button.textContent = "Enter Lobby";
-        buttonDiv.appendChild(button);
+        
+        // Check if game is private, add click handler for private games
+        if (challenge.game_type === 'private') {
+            button.classList.add('private-button');
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                showGameCodePopup(challenge.game_id);
+            });
+        }
 
+        buttonDiv.appendChild(button);
         challengeDiv.appendChild(buttonDiv);
 
-        // Append the entire challenge div to the list
         list.appendChild(challengeDiv);
     });
 };
+
+function showGameCodePopup(gameId) {
+    const popup = document.createElement("div");
+    popup.classList.add("game-code-popup");
+
+    // Popup content
+    popup.innerHTML = `
+        <div class="popup-content">
+            <h2>Introduce game code</h2>
+            <input type="text" id="gameCode" placeholder="Enter game code" />
+            <p class="error-message"></p> <!-- Initially empty error message -->
+            <button id="submitGameCode">Submit</button>
+            <button id="closePopup">X</button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Close popup handler
+    document.getElementById("closePopup").addEventListener("click", function() {
+        document.body.removeChild(popup);
+    });
+
+    // Submit code handler
+    document.getElementById("submitGameCode").addEventListener("click", function() {
+        const code = document.getElementById("gameCode");
+        const errorMessage = document.querySelector(".error-message"); // Get the error message element
+        
+        if (code.value) {
+            code.classList.remove('input-error');
+            errorMessage.style.display = 'none'; // Hide the error message if code is provided
+
+            // Get the JWT token from local storage
+            const token = localStorage.getItem('jwtToken');
+
+            
+            fetch(`${config.address}/game/join/${gameId}?code=${code.value}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Important for JSON payload
+                    'Authorization': `Bearer ${token}` // Send the JWT token in the header
+                }
+            })
+            .then(response => {
+                switch (response.status) {
+                    case 200:
+                        response.json().then(data => {
+                            // Move to corresponding lobby
+                            window.location.href = `lobby.html?gameId=${data.gameId}`;
+                        })
+                        break;
+                    // 403 forbidden (wrong password) or 404 not found (game does not exist anymore)
+                    case 403:
+                    case 422:
+                        response.json().then(data => {
+                            code.classList.add('input-error');
+                            errorMessage.textContent = data.message; // Update the error message text
+                            errorMessage.style.display = 'block'; // Show the error message
+                        });
+                        break;
+                    default:
+                        // Handle other error responses (e.g., 400, 401, 403, etc.)
+                        response.json().then(data => {
+                            sessionStorage.setItem('httpStatus', response.status);
+                            sessionStorage.setItem('customMessage', data.message);
+                        });
+                        // Redirect to error-template.html upon error
+                        window.location.href = 'error-template.html';
+                        break;
+                }
+            })
+            .catch(error => {
+                // Handle error parsing json
+                sessionStorage.setItem('httpStatus', 500);
+                sessionStorage.setItem('customMessage', "Internal Server Error");
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+            });
+
+
+        } else {
+            code.classList.add('input-error');
+            errorMessage.textContent = 'Please, provide a code.'; // Update the error message text
+            errorMessage.style.display = 'block'; // Show the error message
+        }
+    });
+}
+
 
 // Function to display a "No Results" message
 function showNoResults() {
