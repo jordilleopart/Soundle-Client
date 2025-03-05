@@ -6,7 +6,8 @@ const socket = new WebSocket('ws://localhost:3000');
 let currentStep = 0;
 let guessesLeft = 4;
 let startTime = 50; // Initial time for video/audio
-let audio_duration = 50; // Audio duration in seconds
+let audio_duration = 30; // Audio duration in seconds
+let canBePlayed = false;
 
 // Track Information Variables
 let trackArtist = "The Weeknd";
@@ -56,6 +57,9 @@ socket.addEventListener('stop', function (event){
 // TODO: music information should be send through websockets instead of using API calls
 
 //TODO: fetch users from lobby and show them in the leaderboard
+// delet when they leave the lobby
+// update when they change their points
+// add when they join the lobby
 
 
 // Track Information Functions
@@ -80,6 +84,8 @@ function updateTrackInfo(artist, releaseDate, coverUrl, name, trackAudioBase64) 
     const audioPlayerElem = document.getElementById('audio-player');
     audioPlayerElem.src = `data:audio/mp3;base64,${trackAudioBase64}`;
     audioPlayerElem.load();
+    //audioPlayerElem.oncanplaythrough;
+    //audioPlayerElem.oncanplay;
 }
 
 function revealNextTrackElement() {
@@ -89,7 +95,7 @@ function revealNextTrackElement() {
     }
 }
 
-// Player Control Functions
+/* Player Control Functions
 function onPlayerReady(event) {
     console.log('Player is ready!');
     event.target.seekTo(startTime);
@@ -107,15 +113,17 @@ function onPlayerStateChange(event) {
         playButtonIcon.src = '../img/play.fill.png';
         event.target.seekTo(startTime);
     }
-}
+}*/
 
 function togglePlayPause() {
     const playButtonIcon = document.getElementById('play-icon');
     const audioPlayer = document.getElementById('audio-player');
-    if (audioPlayer) {
+    if (audioPlayer === true && canBePlayed === true) {
         if (audioPlayer.paused) {
+            audioPlayer.currentTime = startTime;
             audioPlayer.play();
             playButtonIcon.src = '../img/pause.fill.png';
+            updateProgress();
             setTimeout(() => {
                 audioPlayer.pause();
                 playButtonIcon.src = '../img/play.fill.png';
@@ -142,10 +150,12 @@ function checkUserInput(userInput) {
     if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
         
         //TODO: this works now but should be changed to be done with websockets
-        const missMessage = document.createElement('div');
+        /*const missMessage = document.createElement('div');
         missMessage.classList.add('message-incorrect');
         missMessage.textContent = "username missed the track";
-        document.querySelector('.chat-messages').appendChild(missMessage);
+        document.querySelector('.chat-messages').appendChild(missMessage);*/
+        
+        showMissed(["username has guessed the track"]);
         
         attemptBoxes[currentStep].style.backgroundColor = 'red';
 
@@ -154,10 +164,13 @@ function checkUserInput(userInput) {
     } else {
 
         //TODO: this works now but should be changed to be done with websockets
-        const guessMessage = document.createElement('div');
+        /*const guessMessage = document.createElement('div');
         guessMessage.classList.add('message-correct');
         guessMessage.textContent = "username has guessed the track";
-        document.querySelector('.chat-messages').appendChild(guessMessage);
+        document.querySelector('.chat-messages').appendChild(guessMessage);*/
+
+        showGuessed(["username has guessed the track"]);
+       
        
         //this shoulde done also with websockets
         updateUserPoints("Username", 999);
@@ -178,6 +191,7 @@ function showMessages(messages) {
         messageItem.textContent = message;
         chatMessages.appendChild(messageItem);
     });
+    scrollToBottom(); // Scroll to the bottom after adding new messages
 }
 
 function showGuessed(guesses) {
@@ -188,6 +202,7 @@ function showGuessed(guesses) {
         messageItem.textContent = guess;
         chatMessages.appendChild(messageItem);
     });
+    scrollToBottom(); // Scroll to the bottom after adding new messages
 }
 
 function showMissed(guesses) {
@@ -198,6 +213,12 @@ function showMissed(guesses) {
         messageItem.textContent = guess;
         chatMessages.appendChild(messageItem);
     });
+    scrollToBottom(); // Scroll to the bottom after adding new messages
+}
+
+function scrollToBottom() {
+    const chatMessages = document.querySelector('.chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function showUsersWithLeaderboard(users) {
@@ -291,6 +312,16 @@ function updateAttempts(username, attempts) {
     });
 }
 
+// Function to update the progress bar
+function updateProgress() {
+    const audioPlayer = document.getElementById('audio-player');
+    const progressSlider = document.getElementById('audio-progress');
+    if (audioPlayer && !audioPlayer.paused) {
+        progressSlider.value = (audioPlayer.currentTime - startTime)/audio_duration * 100;
+        requestAnimationFrame(updateProgress);
+    }
+}
+
 // Event Listeners
 document.getElementById('show-elements-btn').addEventListener('click', function() {
     if (guessesLeft > 0) {  
@@ -353,29 +384,42 @@ document.getElementById('message-input').addEventListener('keydown', function(ev
     if (event.key === 'Enter') {
         event.preventDefault();
         const userInput = event.target.value.trim();
-        socket.send(JSON.stringify({ type: 'message', data: userInput }));
-        
-        // TODO: this has to be done with websockets now just for demonstration
-        showMessages([`username: ${userInput}`]);
-        
-        event.target.value = "";
+        if (userInput !== ""){
+            socket.send(JSON.stringify({ type: 'message', data: userInput }));
+
+            // TODO: this has to be shown with websockets implementation, now its just for demonstration
+            showMessages([`username: ${userInput}`]);
+            event.target.value = "";
+        }
+       
     }
 });
 
 document.getElementById('send-btn').addEventListener('click', function(event) {
     const messageInput = document.getElementById('message-input');
     const userInput = messageInput.value.trim();
-    socket.send(JSON.stringify({ type: 'message', data: userInput }));
-    
-    // TODO: this has to be done with websockets now just for demonstration
-    showMessages([`username: ${userInput}`]);
-    
-    messageInput.value = "";
+
+    if (userInput !== ""){
+        socket.send(JSON.stringify({ type: 'message', data: userInput }));
+
+        // TODO: this has to be shown with websockets implementation, now its just for demonstration
+        showMessages([`username: ${userInput}`]);
+        event.target.value = "";
+    }
 
 });
 
 // Initial Setup
 updateTrackInfo(trackArtist, releaseDate, trackImage, trackName, urlYouTube);
+
+//TODO: event listener onplaythrough that sends a message to the server that users can play the music
+document.getElementById("audio-player").oncanplaythrough = function() {
+    
+    canBePlayed = true;
+    
+    //example
+    //socket.send(JSON.stringify({ type: 'play' }));
+};
 
 // Page Load Example Data
 document.addEventListener('DOMContentLoaded', () => {
