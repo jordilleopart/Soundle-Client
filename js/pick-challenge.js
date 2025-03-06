@@ -117,7 +117,9 @@ function showChallenges(results) {
             });
         } else {
             button.addEventListener('click', () => {
-                window.location.href = `lobby.html?game_id=${challenge.game_id}`;  // Redirect to the lobby for public games
+                // Start websocket connection
+                window.WebSocketManager.connect(challenge.game_id);
+                window.location.href = `lobby.html?gameId=${challenge.game_id}`;  // Redirect to the lobby for public games
             });
         }
 
@@ -174,6 +176,8 @@ function showGameCodePopup(gameId) {
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
+                            // Start websocket connection
+                            window.WebSocketManager.connect(data.gameId);
                             // Move to corresponding lobby
                             window.location.href = `lobby.html?gameId=${data.gameId}`;
                         })
