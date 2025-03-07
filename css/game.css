@@ -95,6 +95,11 @@ h2 {
     font-weight: bold;
 }
 
+.apoints {
+    color: rgb(76, 175, 80);;
+    font-weight: bold;
+}
+
 /* Image Placeholder - Now displays a real image */
 .image-placeholder {
     width: 400px;
@@ -213,7 +218,11 @@ input:focus {
     justify-content: center;
     gap: 4px;
 }
-
+.attempts-leaderboard {
+    display: flex;
+    justify-content: flex-start;
+    gap: 4px;
+}
 .attempt-box {
     width: 25px;
     height: 25px;

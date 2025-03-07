@@ -29,21 +29,20 @@ h2 {
     margin-top: 21px
 }
 
-/* Leaderboard */
 .leaderboard {
+    position: absolute; /* Cambia de fixed a absolute */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%; /* Ajusta el ancho según lo necesites */
+    height: auto; /* Ajusta la altura automáticamente */
+    max-height: 80vh; /* Evita que sea demasiado alto */
+    padding: 20px;
     border: 1px solid #d2d2d7;
     border-radius: 15px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 80px; /* Adjust based on header height */
-    left: 20px;
-    width: 300px;
-    height: calc(100vh - 225px); /* Adjust height to fit the screen */
     overflow-y: auto;
-    margin-left: 40px;
+    background: white;
 }
 
 .leaderboard .panel-header {
@@ -53,11 +52,7 @@ h2 {
     margin-bottom: 20px;
 }
 
-.leaderboard-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+
 
 .user-row {
     display: flex;
@@ -289,3 +284,199 @@ input:focus {
     border-radius: 10px 0 0 10px;
 }
 
+/* Contenedor del leaderboard */
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Podio */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    position: relative;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Cada puesto en el podio */
+.podium-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    position: relative;
+}
+
+/* Estilos individuales para cada posición en el podio */
+.first-place {
+    background: gold;
+    height: 100%;
+    width: 30%;
+}
+
+.second-place {
+    background: silver;
+    height: 80%;
+    width: 20%;
+}
+
+.third-place {
+    background: #cd7f32;
+    height: 70%;
+    width: 20%;
+}
+
+/* Estilo del texto del puesto */
+.place {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Estilo de las imágenes de perfil */
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Estilo del nombre de usuario */
+.username {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+/* Estilo de los puntos */
+.points {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Lista de jugadores debajo del podio */
+.user-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.position {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+/* Estilos de cada puesto */
+.podium-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    flex-grow: 1;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+/* Tamaños ajustados */
+.first-place {
+    background: #36cb4f;
+    flex-grow: 3;
+    width: 35%;
+    min-height: 220px;
+}
+
+.second-place {
+    background: #5b9be1;
+    flex-grow: 2;
+    width: 25%;
+    min-height: 180px;
+}
+
+.third-place {
+    background: #FF9500;
+    flex-grow: 1;
+    width: 20%;
+    min-height: 160px;
+}
+
+/* Imagen de perfil */
+.podium .profile-pic {
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+.first-place .profile-pic {
+    width: 100px;
+    height: 100px;
+}
+
+.second-place .profile-pic {
+    width: 80px;
+    height: 80px;
+}
+
+.third-place .profile-pic {
+    width: 60px;
+    height: 60px;
+}
+
+/* Nombre de usuario */
+.podium .username {
+    font-weight: bold;
+    min-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+}
+
+.first-place .username {
+    font-size: 1.5em;
+}
+
+.second-place .username {
+    font-size: 1.3em;
+}
+
+.third-place .username {
+    font-size: 1.1em;
+}
+
+/* Puntos */
+.podium .points {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.first-place .points {
+    font-size: 1.4em;
+}
+
+.second-place .points {
+    font-size: 1.2em;
+}
+
+.third-place .points {
+    font-size: 1em;
+}

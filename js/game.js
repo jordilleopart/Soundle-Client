@@ -168,7 +168,7 @@ function checkUserInput(userInput) {
        
        
         //this shoulde done also with websockets
-        updateUserPoints("Username", 999);
+        updateUserPoints("Username3", 100);
         updateUserAttempts('Username3', 'guessed', currentStep);
         attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
         
@@ -218,15 +218,9 @@ function scrollToBottom() {
 
 function showUsersWithLeaderboard(users) {
     const leaderboardList = document.querySelector('.leaderboard-list');
-    const userList = document.createElement('div');
-    userList.classList.add('user-list');
+    leaderboardList.innerHTML = ''; // Clear existing leaderboard
 
     users.forEach(user => {
-        const userItem = document.createElement('div');
-        userItem.classList.add('user-item');
-        userItem.textContent = user.username;
-        userList.appendChild(userItem);
-
         const userRow = document.createElement('div');
         userRow.classList.add('user-row');
 
@@ -249,11 +243,16 @@ function showUsersWithLeaderboard(users) {
         pointsElem.classList.add('points');
         pointsElem.textContent = user.points;
 
+        const apointsElem = document.createElement('p');
+        apointsElem.classList.add('apoints');
+        apointsElem.textContent = ''; // Empty at the start
+
         userInfo.appendChild(usernameElem);
         userInfo.appendChild(pointsElem);
+        userInfo.appendChild(apointsElem);
 
         const attemptsElem = document.createElement('div');
-        attemptsElem.classList.add('attempts');
+        attemptsElem.classList.add('attempts-leaderboard');
 
         for (let i = 0; i < user.attempts; i++) {
             const attemptBox = document.createElement('div');
@@ -269,18 +268,31 @@ function showUsersWithLeaderboard(users) {
 
         leaderboardList.appendChild(userRow);
     });
-
-    
 }
 
-function updateUserPoints(username, newPoints) {
+function updateUserPoints(username, pointsToAdd) {
     const userRows = document.querySelectorAll('.user-row');
     userRows.forEach(row => {
         const usernameElem = row.querySelector('.username');
         if (usernameElem && usernameElem.textContent === username) {
             const pointsElem = row.querySelector('.points');
             if (pointsElem) {
+                const currentPoints = parseInt(pointsElem.textContent, 10);
+                const newPoints = currentPoints + pointsToAdd;
                 pointsElem.textContent = newPoints;
+            }
+        }
+    });
+}
+
+function updateUserAPoints(username, additionalPoints) {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const usernameElem = row.querySelector('.username');
+        if (usernameElem && usernameElem.textContent === username) {
+            const apointsElem = row.querySelector('.apoints');
+            if (apointsElem) {
+                apointsElem.textContent = `+ ${additionalPoints}`;
             }
         }
     });
@@ -297,6 +309,7 @@ function updateProgress() {
     }
 }
 
+// TODO: this function should be called when users sends miss/guessed message
 // Function to update the leaderboard attempts
 function updateUserAttempts(username, state, currentInput) {
     const userRows = document.querySelectorAll('.user-row');
@@ -322,6 +335,16 @@ function updateUserAttempts(username, state, currentInput) {
     });
 }
 
+function resetUserAttempts() {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const attemptBoxes = row.querySelectorAll('.attempt-box');
+        attemptBoxes.forEach(box => {
+            box.classList.remove('attempt-box-correct', 'attempt-box-incorrect');
+        });
+    });
+}
+
 // Event Listeners
 document.getElementById('show-elements-btn').addEventListener('click', function() {
     if (guessesLeft > 0) {  
@@ -336,6 +359,7 @@ document.getElementById('shuffle-btn').addEventListener('click', function() {
 
     currentStep = 0;
     guessesLeft = 4;
+    resetUserAttempts();
 
     elements.forEach(element => element.classList.add('hidden'));
     attemptBoxes.forEach(box => box.style.backgroundColor = '');
@@ -449,6 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { username: 'Username4', points: 95, attempts: 4 },
         { username: 'Username6', points: 55, attempts: 4 },
     ];
+
+    
+
     showUsersWithLeaderboard(users);
 
     let gameProgress = 50;
