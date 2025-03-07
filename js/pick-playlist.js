@@ -77,8 +77,6 @@ playlists.forEach(playlist => {
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
-                            // Start websocket connection
-                            window.WebSocketManager.connect(data.gameId);
                             // Move to corresponding lobby
                             window.location.href = `lobby.html?gameId=${data.gameId}`;
                         })

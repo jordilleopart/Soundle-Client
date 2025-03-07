@@ -117,9 +117,7 @@ function showChallenges(results) {
             });
         } else {
             button.addEventListener('click', () => {
-                // Start websocket connection
-                window.WebSocketManager.connect(challenge.game_id);
-                window.location.href = `lobby.html?gameId=${challenge.game_id}`;  // Redirect to the lobby for public games
+                enterPublicLobby(challenge.game_id);
             });
         }
 
@@ -129,6 +127,46 @@ function showChallenges(results) {
         list.appendChild(challengeDiv);
     });
 };
+
+function enterPublicLobby(gameId) {
+
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    fetch(`${config.address}/game/join/${gameId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        }
+    })
+    .then(response => {
+        switch (response.status) {
+            case 200:
+                response.json().then(data => {
+                    // Move to corresponding lobby
+                    window.location.href = `lobby.html?gameId=${data.gameId}`;
+                })
+                break;
+            default:
+                // Handle other error responses (e.g., 401, 403, etc.)
+                response.json().then(data => {
+                    sessionStorage.setItem('httpStatus', response.status);
+                    sessionStorage.setItem('customMessage', data.message);
+                });
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+                break;
+        }
+    })
+    .catch(error => {
+        // Handle error parsing json
+        sessionStorage.setItem('httpStatus', 500);
+        sessionStorage.setItem('customMessage', "Internal Server Error");
+        // Redirect to error-template.html upon error
+        window.location.href = 'error-template.html';
+    });
+}
 
 function showGameCodePopup(gameId) {
     const popup = document.createElement("div");
@@ -176,8 +214,6 @@ function showGameCodePopup(gameId) {
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
-                            // Start websocket connection
-                            window.WebSocketManager.connect(data.gameId);
                             // Move to corresponding lobby
                             window.location.href = `lobby.html?gameId=${data.gameId}`;
                         })
