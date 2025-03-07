@@ -38,6 +38,7 @@ socket.addEventListener('message', function (event) {
         showGuessed([data.guessed]);
     }
 });
+
 //TODO: event listener that recives some message and plays/stops music
 /* this is just a draft I havent tested it yet, if it works we have to deactivate the possibility to play music with the play button */
 socket.addEventListener('play', function (event) {
@@ -95,7 +96,9 @@ function revealNextTrackElement() {
     }
 }
 
-/* Player Control Functions
+/* FUNCTIONS FROM THE YOUTUBE API
+
+Player Control Functions
 function onPlayerReady(event) {
     console.log('Player is ready!');
     event.target.seekTo(startTime);
@@ -118,8 +121,8 @@ function onPlayerStateChange(event) {
 function togglePlayPause() {
     const playButtonIcon = document.getElementById('play-icon');
     const audioPlayer = document.getElementById('audio-player');
-    if (audioPlayer === true && canBePlayed === true) {
-        if (audioPlayer.paused) {
+    if (audioPlayer && canBePlayed) {
+        if (audioPlayer.paused && canBePlayed) {
             audioPlayer.currentTime = startTime;
             audioPlayer.play();
             playButtonIcon.src = '../img/pause.fill.png';
@@ -135,6 +138,7 @@ function togglePlayPause() {
             audioPlayer.currentTime = startTime;
         }
     } else {
+        alert("The audio is not ready to play");
         console.log('Audio player is not initialized yet');
     }
 }
@@ -150,31 +154,22 @@ function checkUserInput(userInput) {
     if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
         
         //TODO: this works now but should be changed to be done with websockets
-        /*const missMessage = document.createElement('div');
-        missMessage.classList.add('message-incorrect');
-        missMessage.textContent = "username missed the track";
-        document.querySelector('.chat-messages').appendChild(missMessage);*/
-        
         showMissed(["username has guessed the track"]);
         
         attemptBoxes[currentStep].style.backgroundColor = 'red';
+        updateUserAttempts('Username3', 'miss', currentStep);
 
         revealNextTrackElement();
         socket.send(JSON.stringify({ type: 'message', data: userInput }));
     } else {
 
         //TODO: this works now but should be changed to be done with websockets
-        /*const guessMessage = document.createElement('div');
-        guessMessage.classList.add('message-correct');
-        guessMessage.textContent = "username has guessed the track";
-        document.querySelector('.chat-messages').appendChild(guessMessage);*/
-
         showGuessed(["username has guessed the track"]);
        
        
         //this shoulde done also with websockets
         updateUserPoints("Username", 999);
-        
+        updateUserAttempts('Username3', 'guessed', currentStep);
         attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
         
         guessesLeft = 0; 
@@ -275,7 +270,7 @@ function showUsersWithLeaderboard(users) {
         leaderboardList.appendChild(userRow);
     });
 
-    //document.querySelector('.chat-panel').appendChild(userList);
+    
 }
 
 function updateUserPoints(username, newPoints) {
@@ -291,26 +286,6 @@ function updateUserPoints(username, newPoints) {
     });
 }
 
-function updateAttempts(username, attempts) {
-    const userRows = document.querySelectorAll('.user-row');
-    userRows.forEach(row => {
-        const usernameElem = row.querySelector('.username');
-        if (usernameElem && usernameElem.textContent === username) {
-            const attemptsElems = row.querySelectorAll('.attempt-box');
-            attemptsElems.forEach((attemptElem, index) => {
-                if (index < attempts.correct) {
-                    attemptElem.classList.add('correct-box');
-                    attemptElem.classList.remove('error-box');
-                } else if (index < attempts.correct + attempts.incorrect) {
-                    attemptElem.classList.add('error-box');
-                    attemptElem.classList.remove('correct-box');
-                } else {
-                    attemptElem.classList.remove('correct-box', 'error-box');
-                }
-            });
-        }
-    });
-}
 
 // Function to update the progress bar
 function updateProgress() {
@@ -320,6 +295,31 @@ function updateProgress() {
         progressSlider.value = (audioPlayer.currentTime - startTime)/audio_duration * 100;
         requestAnimationFrame(updateProgress);
     }
+}
+
+// Function to update the leaderboard attempts
+function updateUserAttempts(username, state, currentInput) {
+    const userRows = document.querySelectorAll('.user-row');
+    userRows.forEach(row => {
+        const usernameElem = row.querySelector('.username');
+        if (usernameElem && usernameElem.textContent.trim() === username) {
+            const attemptBoxes = row.querySelectorAll('.attempts .attempt-box');
+
+            attemptBoxes.forEach((box, index) => {
+                if (index < currentInput) {
+                    box.classList.add('attempt-box-incorrect');
+
+                } else if (index === currentInput) {
+                    if (state === 'guessed') {
+                        box.classList.add('attempt-box-correct');
+                    }
+                    else if (state === 'miss') {
+                        box.classList.add('attempt-box-incorrect');
+                    } 
+                }
+            });
+        }
+    });
 }
 
 // Event Listeners
@@ -385,9 +385,11 @@ document.getElementById('message-input').addEventListener('keydown', function(ev
         event.preventDefault();
         const userInput = event.target.value.trim();
         if (userInput !== ""){
+
+            
+            // TODO: this has to be shown with websockets implementation, now its just for demonstration
             socket.send(JSON.stringify({ type: 'message', data: userInput }));
 
-            // TODO: this has to be shown with websockets implementation, now its just for demonstration
             showMessages([`username: ${userInput}`]);
             event.target.value = "";
         }
@@ -403,6 +405,8 @@ document.getElementById('send-btn').addEventListener('click', function(event) {
         socket.send(JSON.stringify({ type: 'message', data: userInput }));
 
         // TODO: this has to be shown with websockets implementation, now its just for demonstration
+        socket.send(JSON.stringify({ type: 'message', data: userInput }));
+
         showMessages([`username: ${userInput}`]);
         event.target.value = "";
     }
@@ -414,10 +418,18 @@ updateTrackInfo(trackArtist, releaseDate, trackImage, trackName, urlYouTube);
 
 //TODO: event listener onplaythrough that sends a message to the server that users can play the music
 document.getElementById("audio-player").oncanplaythrough = function() {
-    
+   
     canBePlayed = true;
-    
-    //example
+    alert("The audio is ready to play (oncanplaythrough)");
+    //TODO: send a message to the server that users can play the music
+    //socket.send(JSON.stringify({ type: 'play' }));
+};
+
+document.getElementById("audio-player").oncanplay = function() {
+   
+    canBePlayed = true;
+    alert("The audio is ready to play(oncanplay)");
+    //TODO: send a message to the server that users can play the music
     //socket.send(JSON.stringify({ type: 'play' }));
 };
 
@@ -428,14 +440,14 @@ document.addEventListener('DOMContentLoaded', () => {
     showGuessed(['username1 guessed the track']);
 
     const users = [
-        { username: 'Username', points: 100, attempts: 0 },
-        { username: 'Username2', points: 80, attempts: 0 },
-        { username: 'Username3', points: 65, attempts: 0 },
-        { username: 'Username3', points: 90, attempts: 0 },
-        { username: 'Username4', points: 25, attempts: 0 },
-        { username: 'Username6', points: 40, attempts: 0 },
-        { username: 'Username4', points: 95, attempts: 0 },
-        { username: 'Username6', points: 55, attempts: 0 },
+        { username: 'Username', points: 100, attempts: 4 },
+        { username: 'Username2', points: 80, attempts: 4 },
+        { username: 'Username3', points: 65, attempts: 4 },
+        { username: 'Username3', points: 90, attempts: 4 },
+        { username: 'Username4', points: 25, attempts: 4 },
+        { username: 'Username6', points: 40, attempts: 4 },
+        { username: 'Username4', points: 95, attempts: 4 },
+        { username: 'Username6', points: 55, attempts: 4 },
     ];
     showUsersWithLeaderboard(users);
 

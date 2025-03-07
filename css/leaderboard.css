@@ -94,6 +94,10 @@ h2 {
     color: #0071e3;
     font-weight: bold;
 }
+.apoints {
+    color: rgb(76, 175, 80);;
+    font-weight: bold;
+}
 
 /* Image Placeholder - Now displays a real image */
 .image-placeholder {

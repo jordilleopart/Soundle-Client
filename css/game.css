@@ -222,6 +222,22 @@ input:focus {
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.attempt-box-correct {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #d2d2d7;
+    background-color: rgb(76, 175, 80);
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.attempt-box-incorrect {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #d2d2d7;
+    background-color: red;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 .error-box {
     width: 280px;
