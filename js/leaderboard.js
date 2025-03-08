@@ -67,35 +67,61 @@ function showUsersFinalLeaderboard(users) {
 
     leaderboardContainer.appendChild(podium);
 
-    // Agregar el resto de jugadores como lista
-    users.slice(3).forEach((user, index) => {
-        const userRow = document.createElement('div');
-        userRow.classList.add('user-row');
+    // Contenedor para los usuarios del 4° al 12° lugar
+    const usersContainer = document.createElement('div');
+    usersContainer.classList.add('users-container');
 
-        const positionElem = document.createElement('p');
-        positionElem.classList.add('position');
-        positionElem.textContent = `${index + 4}th`;
+    const columnLeft = document.createElement('div');
+    columnLeft.classList.add('column-left');
 
-        const profilePic = document.createElement('img');
-        profilePic.src = "../img/person.crop.circle.fill-grey.png";
-        profilePic.alt = user.username;
-        profilePic.classList.add('profile-pic');
+    const columnRight = document.createElement('div');
+    columnRight.classList.add('column-right');
 
-        const usernameElem = document.createElement('p');
-        usernameElem.classList.add('username');
-        usernameElem.textContent = user.username;
+    // Distribuir usuarios alternadamente entre izquierda y derecha
+    users.slice(3, 12).forEach((user, index) => {
+        const position = index + 4; // Ajustar el número de posición
+        const userRow = createUserRow(user, position);
 
-        const pointsElem = document.createElement('p');
-        pointsElem.classList.add('points');
-        pointsElem.textContent = user.points;
-
-        userRow.appendChild(positionElem);
-        userRow.appendChild(profilePic);
-        userRow.appendChild(usernameElem);
-        userRow.appendChild(pointsElem);
-
-        leaderboardContainer.appendChild(userRow);
+        if (index % 2 === 0) {
+            columnLeft.appendChild(userRow);  // Posiciones pares van a la izquierda
+        } else {
+            columnRight.appendChild(userRow); // Posiciones impares van a la derecha
+        }
     });
+
+    usersContainer.appendChild(columnLeft);
+    usersContainer.appendChild(columnRight);
+    leaderboardContainer.appendChild(usersContainer);
+}
+
+// Función auxiliar para crear una fila de usuario
+function createUserRow(user, position) {
+    const userRow = document.createElement('div');
+    userRow.classList.add('user-row');
+
+    const positionElem = document.createElement('p');
+    positionElem.classList.add('position');
+    positionElem.textContent = `${position}th`;
+
+    const profilePic = document.createElement('img');
+    profilePic.src = "../img/person.crop.circle.fill-grey.png";
+    profilePic.alt = user.username;
+    profilePic.classList.add('profile-pic');
+
+    const usernameElem = document.createElement('p');
+    usernameElem.classList.add('username');
+    usernameElem.textContent = user.username;
+
+    const pointsElem = document.createElement('p');
+    pointsElem.classList.add('points');
+    pointsElem.textContent = user.points;
+
+    userRow.appendChild(positionElem);
+    userRow.appendChild(profilePic);
+    userRow.appendChild(usernameElem);
+    userRow.appendChild(pointsElem);
+
+    return userRow;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -105,16 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { username: 'Username3', points: 24, attempts: { correct: 3, incorrect: 1 } },
         { username: 'Username4', points: 80, attempts: { correct: 0, incorrect: 4 } },
         { username: 'Username5', points: 45, attempts: { correct: 4, incorrect: 0 } },
-        { username: 'Username6', points: 2, attempts: { correct: 2, incorrect: 2 } },
-        { username: 'Username7', points: 13, attempts: { correct: 2, incorrect: 2 } },
-        { username: 'Username8', points: 20, attempts: { correct: 1, incorrect: 3 } },
-        { username: 'Username9', points: 24, attempts: { correct: 3, incorrect: 1 } },
-        { username: 'Username10', points: 13, attempts: { correct: 2, incorrect: 2 } },
         { username: 'Username11', points: 20, attempts: { correct: 1, incorrect: 3 } },
         { username: 'Username12', points: 24, attempts: { correct: 3, incorrect: 1 } },
         { username: 'Username13', points: 13, attempts: { correct: 2, incorrect: 2 } },
-        { username: 'Username14', points: 20, attempts: { correct: 1, incorrect: 3 } },
-        { username: 'Username15', points: 24, attempts: { correct: 3, incorrect: 1 } },
+        
 
         
     ];
