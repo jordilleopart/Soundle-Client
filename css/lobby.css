@@ -15,7 +15,7 @@
     border-radius: 15px;
     padding: 20px;
     width: 300px;
-    height: 80%;
+    max-height: 400px; /* Limit the height of the panel */
     display: flex;
     flex-direction: column;
     margin: 40px;
@@ -36,7 +36,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     flex-grow: 1;
-    max-height: 400px; /* Set max height for scroll */
+    max-height: 280px; /* Set max height for the scrollable list */
     overflow-y: auto; /* Make it scrollable */
     padding: 10px; /* Optional: add padding for better spacing */
 }
@@ -175,23 +175,22 @@
     margin-right: 8px;
 }
 
-
-/* Style for the Leave button */
+/* Leave button */
 .leave-button {
     position: absolute;
     top: 20px;
     left: 20px;
     padding: 12px 24px;
-    background-color: #e74c3c; /* Red background */
+    background-color: red;
     color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
 }
 
 .leave-button:hover {
-    background-color: #c0392b; /* Darken on hover */
+    background-color: #d13b3b; /* Slightly darker red on hover */
 }

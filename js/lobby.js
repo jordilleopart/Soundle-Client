@@ -41,7 +41,8 @@ function fillLobbyData(data) {
     const currentUsers = data.gameInfo.num_players;  // Assuming this value comes from the backend
     const maxPlayers = data.gameInfo.max_players;
 
-    usersCountElement.textContent = `${currentUsers}/${maxPlayers}`;  // Update users in the format users/maxPlayers
+    usersCountElement.innerText = `${currentUsers}/${maxPlayers}`;  // Update users in the format users/maxPlayers
+    chat.setLobbyData(maxPlayers, currentUsers);  // Update Chat instance with the new data
 }
 
 /* Function triggered on page load, to check we have access to the page */
@@ -89,4 +90,37 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'error-template.html';
     });
 
+});
+
+let customLeave = false; // Flag to track if the user clicked the "Leave" button
+
+// Function to perform the fetch request when leaving
+function performLeaveAction() {
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    fetch(`${config.address}/game/leave/${chat.lobby}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        },
+        keepalive: true,  // This flag ensures the request is sent even if the page is unloading
+    });
+}
+
+// Add event listener for the leave button
+document.getElementById("leave-button").addEventListener("click", (event) => {
+    event.preventDefault(); // Prevent default button action
+    customLeave = true;  // Set the flag to true when the user clicks "Leave"
+    performLeaveAction();
+    window.location.href = "home.html"; // Redirect after leaving the room
+});
+
+// Beforeunload event to call the performLeaveAction
+window.addEventListener('beforeunload', (event) => {
+    // Check if the page is being refreshed by using sessionStorage
+    if (!customLeave) {
+        performLeaveAction();
+    }
 });

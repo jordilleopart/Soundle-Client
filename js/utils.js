@@ -89,6 +89,8 @@ class Chat {
         this.history = [];
         this.chatMessagesDiv = null;  // Cached reference to the chat container
         this.userListDiv = null;  // Cached reference to the user list container
+        this.maxPlayers = null;  // Initialize maxPlayers to null
+        this.currentUsers = null; // Initialize currentUsers to null
         Chat.instance = this;
     }
 
@@ -109,6 +111,17 @@ class Chat {
     cacheDivElements() {
         this.chatMessagesDiv = document.querySelector('.chat-messages');  // Get the first matching element for chat
         this.userListDiv = document.querySelector('.user-list');  // Get the first matching element for user list
+    }
+
+    // Method to set maxPlayers and currentUsers
+    setLobbyData(maxPlayers, currentUsers) {
+        this.maxPlayers = maxPlayers;
+        this.currentUsers = currentUsers;
+
+        // Now you can update the user count in the UI
+        if (this.userListDiv) {
+            document.getElementById('users-count').textContent = `${this.currentUsers}/${this.maxPlayers}`;
+        }
     }
 
     // Handle incoming WebSocket messages
@@ -244,7 +257,7 @@ class Chat {
             const maxPlayers = this.maxPlayers; // Get the max players value (you might already have this in your context)
             
             // Update the users count element with the new value
-            usersCountElement.textContent = `${currentUsers}/${maxPlayers}`;
+            document.getElementById('users-count').textContent = `${currentUsers}/${maxPlayers}`;
         })
         .catch(error => {
             console.error('Error fetching users:', error);
