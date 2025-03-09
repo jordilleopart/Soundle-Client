@@ -36,27 +36,56 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     flex-grow: 1;
+    max-height: 400px; /* Set max height for scroll */
+    overflow-y: auto; /* Make it scrollable */
+    padding: 10px; /* Optional: add padding for better spacing */
 }
 
-/* Icono de usuario */
+/* Individual user container */
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    background-color: #f9f9f9; /* Background color for user */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+/* User icon */
 .user-icon {
     width: 50px;
     height: 50px;
-    border-radius: 50%; /* Hace que sea redondo */
-    background-color: #f0f0f5; /* Color de fondo similar al perfil */
-    border: 1px solid #d2d2d7; /* Bordes suaves */
+    border-radius: 50%; /* Make the icon circular */
+    background-color: #f0f0f5; /* Background color of icon */
+    border: 1px solid #d2d2d7;
     display: inline-block;
-    overflow: hidden; /* Asegura que cualquier imagen se ajuste dentro del círculo */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave para el efecto de profundidad */
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* User image inside the icon */
 .user-icon img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen ocupe todo el espacio sin distorsionarse */
-    border-radius: 50%; /* Mantiene el borde redondeado en las imágenes también */
+    object-fit: cover;
+    border-radius: 50%; /* Keep the image round */
 }
 
+/* Username styling */
+.username {
+    margin-top: 10px; /* Space between icon and username */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Style for the current logged-in user */
+.user.current-user {
+    background-color: #d3f4ff; /* Light blue background for the current user */
+}
 
 /* Botón de inicio */
 .start-button {
@@ -86,6 +115,83 @@
     cursor: pointer;
 }
 
-.info{
+.info {
     margin-top: 40px;
+}
+
+/* Chat messages container */
+.chat-messages {
+    max-height: 350px;  /* Set a max height for the chat */
+    overflow-y: auto;   /* Add vertical scrolling when content overflows */
+}
+
+/* Chat input container */
+.chat-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    width: 100%;
+}
+
+/* Chat input field */
+.chat-input input {
+    width: 85%; /* Take most of the space */
+    padding: 8px 12px;
+    border: 1px solid #d2d2d7;
+    border-radius: 15px; /* Slightly round the corners like the message bubbles */
+    font-size: 12px; /* Smaller text to match the message font size */
+    background-color: #f0f0f5; /* Similar to message background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    transition: border-color 0.3s ease; /* Smooth border color change */
+}
+
+/* Focused input field */
+.chat-input input:focus {
+    outline: none;
+    border-color: #007aff; /* Match with sent message color */
+}
+
+/* Send button */
+.chat-input button {
+    padding: 8px 16px;
+    background-color: #007aff; /* Match sent message color */
+    color: white;
+    border: none;
+    border-radius: 15px; /* Rounded corners to match input */
+    cursor: pointer;
+    font-size: 12px; /* Match the font size with the input */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Send button hover effect */
+.chat-input button:hover {
+    background-color: #0056b3; /* Darken slightly on hover */
+}
+
+/* Add spacing between the input and button if needed */
+.chat-input input, .chat-input button {
+    margin-right: 8px;
+}
+
+
+/* Style for the Leave button */
+.leave-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 12px 24px;
+    background-color: #e74c3c; /* Red background */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.leave-button:hover {
+    background-color: #c0392b; /* Darken on hover */
 }

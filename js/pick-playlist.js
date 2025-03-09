@@ -64,7 +64,7 @@ playlists.forEach(playlist => {
             }
         })
         .then(jsonData => {
-
+            
             // creation of game was succesful, then join game
             fetch(`${config.address}/game/join/${jsonData.gameId}?code=${jsonData.code}`, {
                 method: 'POST',

@@ -334,10 +334,10 @@ async function fetchAvailableChallenges(path) {
 function updatePaginationResults(pagination) {
     maxPage = pagination.totalPages;
     // update page X of X
-    document.getElementById("currentPage").innerText = `Page ${pagination.pageNumber} of ${pagination.totalPages}`;
+    document.getElementById("currentPage").innerText = `Page ${Math.min(pagination.pageNumber, pagination.totalPages)} of ${pagination.totalPages}`;
     // update showing x-x of x results
-    const firstResultNum = pagination.pageSize * (pagination.pageNumber-1) + 1;
-    const lastResultNum = firstResultNum + (pagination.pageSize-1);
+    const firstResultNum = Math.min(pagination.pageSize * (pagination.pageNumber-1) + 1, pagination.totalCount);
+    const lastResultNum = Math.min(firstResultNum + (pagination.pageSize-1), pagination.totalCount);
     document.getElementById("rangeDisplay").innerText = `Showing ${firstResultNum}-${lastResultNum} of ${pagination.totalCount} results`
 }
 

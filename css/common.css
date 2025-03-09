@@ -74,25 +74,52 @@ a:hover {
     border-radius: 20px;
     font-size: 11px;
     display: flex;
-    align-items: center;
-    gap: 10px;
-    max-width: 80%;
+    flex-direction: column; /* Stack author and content vertically */
+    align-items: flex-start; /* Align messages to the left by default */
+    gap: 5px; /* Space between author and content */
+    max-width: 80%; /* Maximum width of message */
     margin-bottom: 8px;
+    word-break: break-word; /* Allow text to wrap to the next line */
+    white-space: normal; /* Ensure that long words break correctly */
+}
+
+/* Author's name style */
+.message-author {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333; /* You can adjust the color to match your design */
+    margin-bottom: 5px; /* Spacing between author and content */
+}
+
+/* Message content style */
+.message-content {
+    font-size: 14px; /* Adjust the font size for the content */
+    word-break: break-word; /* Ensure long words break correctly */
+    white-space: normal; /* Ensure that long words break correctly */
 }
 
 /* Mensaje enviado por el usuario (con fondo azul claro) */
 .message.sent {
     background-color: #007aff;
     color: white;
-    align-self: flex-end;
+    align-self: flex-end; /* Align to the right */
 }
 
 /* Mensaje recibido (con fondo gris claro) */
 .message.received {
     background-color: #f0f0f5;
     color: black;
-    align-self: flex-start;
+    align-self: flex-start; /* Align to the left */
 }
+
+/* Mensaje del sistema */
+.message.system {
+    background: transparent;
+    color: grey;
+    align-self: center; /* Center the system message */
+}
+
+/* Optional: Styles for the chat panel (container) */
 .chat-panel {
     border: 1px solid #d2d2d7;
     border-radius: 15px;

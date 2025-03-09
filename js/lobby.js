@@ -1,12 +1,47 @@
+// Select relevant DOM elements
+const sendButton = document.querySelector('.chat-input button');
+const chatMessages = document.querySelector('.chat-messages');
+const inputField = document.querySelector('.chat-input input');
+
+// Function to handle sending messages
+sendButton.addEventListener('click', function() {
+    const messageText = inputField.value.trim(); // Get and clean the input
+
+    // Check if the input is not empty
+    if (messageText !== "") {
+        // Create a new message element
+        chat.sendMessage({type: "chat", author: localStorage.getItem('username'), content: messageText});
+        // reset input
+        inputField.value = "";
+    }
+});
+
+// Optional: Allow pressing "Enter" to send a message
+inputField.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendButton.click();
+    }
+});
+
 function fillLobbyData(data) {
     console.log(data)
-    // Update the title
+    // Update the titles
+    const pageTitle = document.querySelector('title');
+    pageTitle.innerText = `Soundle - ${data.gameInfo.user_name}'s game`;
+
     const gameTitleElement = document.getElementById('game-title');
     gameTitleElement.textContent = data.gameInfo.game_id;
 
     // Update the author
     const gameAuthorElement = document.getElementById('game-creator');
     gameAuthorElement.textContent = `by ${data.gameInfo.user_name}`;
+
+    // Update the number of users in the room
+    const usersCountElement = document.getElementById('users-count');
+    const currentUsers = data.gameInfo.num_players;  // Assuming this value comes from the backend
+    const maxPlayers = data.gameInfo.max_players;
+
+    usersCountElement.textContent = `${currentUsers}/${maxPlayers}`;  // Update users in the format users/maxPlayers
 }
 
 /* Function triggered on page load, to check we have access to the page */
@@ -32,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     fillLobbyData(data);
 
                     // connect to websocket (chat)
-                    window.WebSocketManager.connect(lobbyId);
+                    chat.connectToLobby(lobbyId);
                 })
                 break;
             default:

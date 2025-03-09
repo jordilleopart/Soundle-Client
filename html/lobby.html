@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Website</title>
+    <title></title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/lobby.css">
     <!--General config and reusable functions-->
@@ -20,24 +20,11 @@
         <div class="users-panel">
             <div class="panel-header">
                 <span>Users in the room</span>
+                <span id="users-count">0/0</span> <!-- Placeholder for user count -->
                 <span>x</span>
             </div>
             <div class="user-list">
-                <div class="user-icon">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 1">
-                </div>
-                <div class="user-icon">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 2">
-                </div>
-                <div class="user-icon">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 3">
-                </div>
-                <div class="user-icon">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 4">
-                </div>
-                <div class="user-icon">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 5">
-                </div>
+                <!-- Dynamically filled user icons -->
             </div>
         </div>
 
@@ -55,11 +42,6 @@
                 <span>x</span>
             </div>
             <div class="chat-messages">
-                <!-- Mensajes de ejemplo -->
-                <div class="message received">Hello, how are you?</div>
-                <div class="message sent">I'm good, thanks! How about you?</div>
-                <div class="message received">I'm doing great, just waiting for the game to start!</div>
-                <div class="message sent">Same here! Let's get started!</div>
             </div>
             <div class="chat-input">
                 <input type="text" placeholder="Type a message...">

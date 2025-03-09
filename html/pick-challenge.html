@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Available Challenges</title>
+    <title>Soundle - Available Games</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/pick-challenge.css">
     <!--General config and reusable functions-->
@@ -31,7 +31,7 @@
                 <label for="filterBy">Filter By:</label>
                 <select id="filterBy">
                     <option value="">None</option>
-                    <option value="game_creator">Creator</option>
+                    <option value="u.user_name">Creator</option>
                     <option value="playlist">Playlist</option>
                     <option value="game_type">Type</option>
                 </select>
@@ -42,7 +42,7 @@
 
         <!-- Range of results and current page info -->
         <div class="pagination-info">
-            <span id="rangeDisplay">Showing 1-5 of 20 results</span> 
+            <span id="rangeDisplay"></span> 
         </div>
 
         <div class="challenges" id="challengeList">
@@ -53,7 +53,7 @@
         <div class="pagination">
             <button id="prevPage" class="pagination-btn">← Previous</button>
             <div class="pagination-center">
-                <span id="currentPage">Page 1 of 4</span>
+                <span id="currentPage"></span>
             </div>
             <button id="nextPage" class="pagination-btn">Next →</button>
         </div>

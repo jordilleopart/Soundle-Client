@@ -29,6 +29,8 @@ loginForm.addEventListener('submit', (event) => {
                 // Extract and store JWT token
                 const JWTToken = res.headers.get("Authorization").split(' ')[1];
                 localStorage.setItem('jwtToken', JWTToken);
+                // store username
+                localStorage.setItem('username', formData['username']);
         
                 // Redirect to home.html upon successful login
                 window.location.href = 'home.html';
