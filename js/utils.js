@@ -160,7 +160,7 @@ class Chat {
             authorElement.textContent = messageElement.author; // Set the author's name
         }
 
-        newMessage.appendChild(authorElement); // Add the author to the message
+        if (messageClass !== 'system') newMessage.appendChild(authorElement); // Add the author to the message
         
         // Add the message content (the actual text)
         const contentElement = document.createElement('div');

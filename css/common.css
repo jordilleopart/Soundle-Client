@@ -117,6 +117,23 @@ a:hover {
     background: transparent;
     color: grey;
     align-self: center; /* Center the system message */
+    width: 100% !important; /* Maximum width of message */
+}
+
+.message.incorrect {
+    background-color: #FB4B53;
+    color: white;
+    align-self: flex-start;
+    width: 100% !important; /* Maximum width of message */
+}
+
+.message-correct {
+    background-color: #4CD964; 
+    color: white;
+    align-self: center;
+    width: 100% !important; /* Maximum width of message */
+    margin-bottom: 10px;
+    text-align: center;
 }
 
 /* Optional: Styles for the chat panel (container) */
@@ -129,4 +146,54 @@ a:hover {
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat input container */
+.chat-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    width: 100%;
+}
+
+/* Chat input field */
+.chat-input input {
+    width: 85%; /* Take most of the space */
+    padding: 8px 12px;
+    border: 1px solid #d2d2d7;
+    border-radius: 15px; /* Slightly round the corners like the message bubbles */
+    font-size: 12px; /* Smaller text to match the message font size */
+    background-color: #f0f0f5; /* Similar to message background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    transition: border-color 0.3s ease; /* Smooth border color change */
+}
+
+/* Focused input field */
+.chat-input input:focus {
+    outline: none;
+    border-color: #007aff; /* Match with sent message color */
+}
+
+/* Send button */
+.chat-input button {
+    padding: 8px 16px;
+    background-color: #007aff; /* Match sent message color */
+    color: white;
+    border: none;
+    border-radius: 15px; /* Rounded corners to match input */
+    cursor: pointer;
+    font-size: 12px; /* Match the font size with the input */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Send button hover effect */
+.chat-input button:hover {
+    background-color: #0056b3; /* Darken slightly on hover */
+}
+
+/* Add spacing between the input and button if needed */
+.chat-input input, .chat-input button {
+    margin-right: 8px;
 }
