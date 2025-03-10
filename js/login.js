@@ -1,5 +1,3 @@
-const address = "http://localhost:3000"
-
 // Trigger login action in back-end in successful submit
 const loginForm = document.getElementById("login-form");
 loginForm.addEventListener('submit', (event) => {
@@ -18,7 +16,7 @@ loginForm.addEventListener('submit', (event) => {
     });
 
     // Send a POST request to the backend
-    fetch(`${address}/login`, {
+    fetch(`${config.address}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -31,6 +29,8 @@ loginForm.addEventListener('submit', (event) => {
                 // Extract and store JWT token
                 const JWTToken = res.headers.get("Authorization").split(' ')[1];
                 localStorage.setItem('jwtToken', JWTToken);
+                // store username
+                localStorage.setItem('username', formData['username']);
         
                 // Redirect to home.html upon successful login
                 window.location.href = 'home.html';

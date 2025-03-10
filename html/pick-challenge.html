@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Available Challenges</title>
+    <title>Soundle - Available Games</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/pick-challenge.css">
+    <!--General config and reusable functions-->
+    <script src="../js/utils.js"></script>
 </head>
 <body>
     <h1>Available Challenges</h1>
@@ -16,9 +18,9 @@
                 <label for="sortBy">Sort By:</label>
                 <select id="sortBy">
                     <option value="">None</option>
-                    <option value="name">Players</option>
-                    <option value="date">Rounds</option>
-                    <option value="difficulty">Creation Date</option>
+                    <option value="max_players">Players</option>
+                    <option value="rounds">Rounds</option>
+                    <option value="creation_date">Creation Date</option>
                 </select>
                 <button id="sortOrderButton" class="sort-btn">Ascending</button>
                 <button id="sortApplyButton">Apply</button>
@@ -26,12 +28,12 @@
 
             <!-- Filter By Dropdown and Input with label on top -->
             <div class="filter-container">
-                <label for="columnSelect">Filter By:</label>
-                <select id="columnSelect">
+                <label for="filterBy">Filter By:</label>
+                <select id="filterBy">
                     <option value="">None</option>
-                    <option value="name">Creator</option>
-                    <option value="date">Playlist</option>
-                    <option value="difficulty">Type</option>
+                    <option value="u.user_name">Creator</option>
+                    <option value="playlist">Playlist</option>
+                    <option value="game_type">Type</option>
                 </select>
                 <input type="text" id="search" placeholder="Search">
                 <button id="filterApplyButton">Apply</button>
@@ -40,7 +42,7 @@
 
         <!-- Range of results and current page info -->
         <div class="pagination-info">
-            <span id="rangeDisplay">Showing 1–5 of 20 results</span> 
+            <span id="rangeDisplay"></span> 
         </div>
 
         <div class="challenges" id="challengeList">
@@ -51,7 +53,7 @@
         <div class="pagination">
             <button id="prevPage" class="pagination-btn">← Previous</button>
             <div class="pagination-center">
-                <span id="currentPage">Page 1 of 4</span>
+                <span id="currentPage"></span>
             </div>
             <button id="nextPage" class="pagination-btn">Next →</button>
         </div>

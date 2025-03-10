@@ -15,7 +15,7 @@
     border-radius: 15px;
     padding: 20px;
     width: 300px;
-    height: 80%;
+    max-height: 400px; /* Limit the height of the panel */
     display: flex;
     flex-direction: column;
     margin: 40px;
@@ -36,27 +36,56 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     flex-grow: 1;
+    max-height: 280px; /* Set max height for the scrollable list */
+    overflow-y: auto; /* Make it scrollable */
+    padding: 10px; /* Optional: add padding for better spacing */
 }
 
-/* Icono de usuario */
+/* Individual user container */
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    background-color: #f9f9f9; /* Background color for user */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+/* User icon */
 .user-icon {
     width: 50px;
     height: 50px;
-    border-radius: 50%; /* Hace que sea redondo */
-    background-color: #f0f0f5; /* Color de fondo similar al perfil */
-    border: 1px solid #d2d2d7; /* Bordes suaves */
+    border-radius: 50%; /* Make the icon circular */
+    background-color: #f0f0f5; /* Background color of icon */
+    border: 1px solid #d2d2d7;
     display: inline-block;
-    overflow: hidden; /* Asegura que cualquier imagen se ajuste dentro del círculo */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave para el efecto de profundidad */
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* User image inside the icon */
 .user-icon img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen ocupe todo el espacio sin distorsionarse */
-    border-radius: 50%; /* Mantiene el borde redondeado en las imágenes también */
+    object-fit: cover;
+    border-radius: 50%; /* Keep the image round */
 }
 
+/* Username styling */
+.username {
+    margin-top: 10px; /* Space between icon and username */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Style for the current logged-in user */
+.user.current-user {
+    background-color: #d3f4ff; /* Light blue background for the current user */
+}
 
 /* Botón de inicio */
 .start-button {
@@ -86,6 +115,32 @@
     cursor: pointer;
 }
 
-.info{
+.info {
     margin-top: 40px;
+}
+
+/* Chat messages container */
+.chat-messages {
+    max-height: 350px;  /* Set a max height for the chat */
+    overflow-y: auto;   /* Add vertical scrolling when content overflows */
+}
+
+/* Leave button */
+.leave-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 12px 24px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.leave-button:hover {
+    background-color: #d13b3b; /* Slightly darker red on hover */
 }

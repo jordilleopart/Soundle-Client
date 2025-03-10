@@ -1,47 +1,426 @@
-const challenges = [
-    { name: "Game 1", username: "user1" },
-    { name: "Game 2", username: "user2" },
-    { name: "Game 3", username: "user3" },
-    { name: "Game 4", username: "user4" },
-    { name: "Game 5", username: "user1" }
-];
 
-function loadChallenges() {
-    const list = document.getElementById("challengeList");
+// CHECK FIRST IF USER IS LOGGEDDD
+
+
+var ordering = "Ascending";
+const sortColumn = document.getElementById('sortBy');
+const filterColumn = document.getElementById('filterBy');
+const searchInput = document.getElementById('search');
+const list = document.getElementById("challengeList");
+
+// store the last requested path
+var currentPath = '';
+var currentPage = 1;
+var maxPage = 1;
+
+// Used to map frontend values to backend SQL table definitions
+const mapping = {
+    "Ascending": "ASC",
+    "Descending": "DESC"
+};
+
+function resetFilterValues() {
+    filterColumn.value = ''; // Reset the value of the 'filterBy' element
+    searchInput.value = '';  // Reset the value of the 'search' input
+}
+
+function resetSortValues() {
+    sortColumn.value = '';   // Reset the value of the 'sortBy' element
+    ordering = "Descending";
+    toggleSortOrder(document.getElementById('sortOrderButton'));
+}
+
+function checkColumnSelected(element) {
+    if (element.value !== "") return true;
+    else return false;
+};
+
+// Function to handle the sort order toggle
+function toggleSortOrder(button) {
+    // Toggle the ordering between 'Ascending' and 'Descending'
+    ordering = (ordering === "Ascending") ? "Descending" : "Ascending";
+    
+    // Update button text and styles based on the new ordering value
+    button.textContent = ordering; // Directly set the new ordering value (which is already capitalized)
+    button.classList.toggle('descending', ordering === 'Descending'); // Add or remove 'descending' class
+}
+
+// Function to display challenges on the page
+function showChallenges(results) {
     list.innerHTML = "";
-    challenges.forEach(challenge => {
-        const div = document.createElement("div");
-        div.classList.add("challenge");
-        div.innerHTML = `
-            <span><strong>${challenge.name}</strong> by ${challenge.username}</span>
-            <div class="button">
-                <a href="lobby.html">Enter Lobby</a>
-            </div>
-        `;
-        list.appendChild(div);
+
+    results.forEach(challenge => {
+        const challengeDiv = document.createElement("div");
+        challengeDiv.classList.add("challenge");
+
+        const gameDetails = document.createElement("span");
+        gameDetails.classList.add("game-details");
+
+        const gameId = document.createElement("span");
+        gameId.textContent = `${challenge.game_id}`;
+        gameId.classList.add("game-id");  // Added class for styling
+        gameDetails.appendChild(gameId);
+
+        const gameCreator = document.createElement("strong");
+        gameCreator.textContent = ` by ${challenge.user_name}`;
+        gameDetails.appendChild(gameCreator);
+
+        // Create and display the creation time (hh:mm:ss format)
+        const creationTime = document.createElement("span");
+        creationTime.classList.add("creation-time");
+        const creationDate = new Date(challenge.creation_date);
+        const hours = creationDate.getHours().toString().padStart(2, '0');
+        const minutes = creationDate.getMinutes().toString().padStart(2, '0');
+        const seconds = creationDate.getSeconds().toString().padStart(2, '0');
+        creationTime.textContent = `Created at: ${hours}:${minutes}:${seconds}`;
+        gameDetails.appendChild(creationTime);
+
+        challengeDiv.appendChild(gameDetails);
+
+        const gameStats = document.createElement("span");
+        gameStats.classList.add("game-stats");
+
+        const players = document.createElement("span");
+        players.textContent = `${challenge.num_players}/${challenge.max_players} players`;
+        gameStats.appendChild(players);
+
+        const rounds = document.createElement("span");
+        rounds.textContent = `Rounds: ${challenge.rounds}`;
+        gameStats.appendChild(rounds);
+
+        const playlist = document.createElement("span");
+        playlist.textContent = `Playlist: ${challenge.playlist}`;
+        gameStats.appendChild(playlist);
+
+        challengeDiv.appendChild(gameStats);
+
+        // Show game type (Public or Private)
+        const gameType = document.createElement("span");
+        gameType.textContent = challenge.game_type === 'private' ? "Private" : "Public";
+        gameType.classList.add(challenge.game_type === 'private' ? 'private' : 'public');
+        challengeDiv.appendChild(gameType);
+
+        const buttonDiv = document.createElement("div");
+        buttonDiv.classList.add("button");
+
+        // Create a button instead of a link for the lobby
+        const button = document.createElement("button");
+        button.textContent = "Enter Lobby";
+        button.classList.add("enter-lobby-button");
+
+        // Handle click event for private games
+        if (challenge.game_type === 'private') {
+            button.classList.add('private-button');
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                showGameCodePopup(challenge.game_id);  // Show the game code popup for private games
+            });
+        } else {
+            button.addEventListener('click', () => {
+                enterPublicLobby(challenge.game_id);
+            });
+        }
+
+        buttonDiv.appendChild(button);
+        challengeDiv.appendChild(buttonDiv);
+
+        list.appendChild(challengeDiv);
+    });
+};
+
+function enterPublicLobby(gameId) {
+
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    fetch(`${config.address}/game/join/${gameId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        }
+    })
+    .then(response => {
+        switch (response.status) {
+            case 200:
+                response.json().then(data => {
+                    // Move to corresponding lobby
+                    window.location.href = `lobby.html?gameId=${data.gameId}`;
+                })
+                break;
+            default:
+                // Handle other error responses (e.g., 401, 403, etc.)
+                response.json().then(data => {
+                    sessionStorage.setItem('httpStatus', response.status);
+                    sessionStorage.setItem('customMessage', data.message);
+                });
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+                break;
+        }
+    })
+    .catch(error => {
+        // Handle error parsing json
+        sessionStorage.setItem('httpStatus', 500);
+        sessionStorage.setItem('customMessage', "Internal Server Error");
+        // Redirect to error-template.html upon error
+        window.location.href = 'error-template.html';
     });
 }
 
-loadChallenges();
+function showGameCodePopup(gameId) {
+    const popup = document.createElement("div");
+    popup.classList.add("game-code-popup");
 
-document.getElementById('sortOrderButton').addEventListener('click', function() {
-    const currentOrder = this.textContent; // Get the current button text (Ascending or Descending)
-    
-    if (currentOrder === 'Ascending') {
-        this.textContent = 'Descending'; // Change the button text
-        this.classList.add('descending'); // Add the red color for descending
+    // Popup content
+    popup.innerHTML = `
+        <div class="popup-content">
+            <h2>Introduce game code</h2>
+            <input type="text" id="gameCode" placeholder="Enter game code" />
+            <p class="error-message"></p> <!-- Initially empty error message -->
+            <button id="submitGameCode">Submit</button>
+            <button id="closePopup">X</button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Close popup handler
+    document.getElementById("closePopup").addEventListener("click", function() {
+        document.body.removeChild(popup);
+    });
+
+    // Submit code handler
+    document.getElementById("submitGameCode").addEventListener("click", function() {
+        const code = document.getElementById("gameCode");
+        const errorMessage = document.querySelector(".error-message"); // Get the error message element
+        
+        if (code.value) {
+            code.classList.remove('input-error');
+            errorMessage.style.display = 'none'; // Hide the error message if code is provided
+
+            // Get the JWT token from local storage
+            const token = localStorage.getItem('jwtToken');
+
+            
+            fetch(`${config.address}/game/join/${gameId}?code=${code.value}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Important for JSON payload
+                    'Authorization': `Bearer ${token}` // Send the JWT token in the header
+                }
+            })
+            .then(response => {
+                switch (response.status) {
+                    case 200:
+                        response.json().then(data => {
+                            // Move to corresponding lobby
+                            window.location.href = `lobby.html?gameId=${data.gameId}`;
+                        })
+                        break;
+                    // 403 forbidden (wrong password) or 404 not found (game does not exist anymore)
+                    case 403:
+                    case 422:
+                        response.json().then(data => {
+                            code.classList.add('input-error');
+                            errorMessage.textContent = data.message; // Update the error message text
+                            errorMessage.style.display = 'block'; // Show the error message
+                        });
+                        break;
+                    default:
+                        // Handle other error responses (e.g., 400, 401, 403, etc.)
+                        response.json().then(data => {
+                            sessionStorage.setItem('httpStatus', response.status);
+                            sessionStorage.setItem('customMessage', data.message);
+                        });
+                        // Redirect to error-template.html upon error
+                        window.location.href = 'error-template.html';
+                        break;
+                }
+            })
+            .catch(error => {
+                // Handle error parsing json
+                sessionStorage.setItem('httpStatus', 500);
+                sessionStorage.setItem('customMessage', "Internal Server Error");
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+            });
+
+
+        } else {
+            code.classList.add('input-error');
+            errorMessage.textContent = 'Please, provide a code.'; // Update the error message text
+            errorMessage.style.display = 'block'; // Show the error message
+        }
+    });
+}
+
+// Function to display a "No Results" message
+function showNoResults() {
+    // Clear the current list of challenges
+    list.innerHTML = "";
+
+    // Create a new div to show no results message
+    const noResultsDiv = document.createElement("div");
+    noResultsDiv.classList.add("no-results");
+
+    // Add message content
+    noResultsDiv.innerHTML = `
+        <span>No challenges found.</span>
+    `;
+
+    // Append the "No Results" message to the list
+    list.appendChild(noResultsDiv);
+}
+
+async function moveToPage(pageNumber) {
+    // create corresponding path with page specified
+    const path = currentPath + `&pageNumber=${pageNumber}`;
+
+    // request to backend challenges with the given sorting
+    const results = await fetchAvailableChallenges(path);
+
+    // Check if any result
+    if (results.length > 0) {
+        showChallenges(results);
     } else {
-        this.textContent = 'Ascending'; // Change the button text
-        this.classList.remove('descending'); // Remove the red color for ascending
+        // Display no results obtained
+        showNoResults();
+    }
+}
+
+async function fetchAvailableChallenges(path) {
+
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    // Ask backend for games, with correct route/mode
+    return fetch(`${config.address}/game/available/${path}`, {
+        method: 'GET',
+		headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        }
+    })
+    .then(response => {
+        switch (response.status) {
+            case 200:
+                return response.json();
+            default:
+                // Handle other error responses (e.g., 400, 500, etc.)
+                response.json().then(data => {
+                    sessionStorage.setItem('httpStatus', response.status);
+                    sessionStorage.setItem('customMessage', data.message);
+                });
+                // Redirect to error-template.html upon error
+                window.location.href = 'error-template.html';
+                break;
+        }
+    })
+    .then(data => {
+        updatePaginationResults(data.pagination);
+        return data.games;
+    })
+    .catch((error) => {
+        // Handle errors parsing json
+        sessionStorage.setItem('httpStatus', 500);
+        sessionStorage.setItem('customMessage', "Internal Server Error");
+        // Redirect to error-template.html upon error
+        window.location.href = 'error-template.html';
+    });
+
+};
+
+function updatePaginationResults(pagination) {
+    maxPage = pagination.totalPages;
+    // update page X of X
+    document.getElementById("currentPage").innerText = `Page ${Math.min(pagination.pageNumber, pagination.totalPages)} of ${pagination.totalPages}`;
+    // update showing x-x of x results
+    const firstResultNum = Math.min(pagination.pageSize * (pagination.pageNumber-1) + 1, pagination.totalCount);
+    const lastResultNum = Math.min(firstResultNum + (pagination.pageSize-1), pagination.totalCount);
+    document.getElementById("rangeDisplay").innerText = `Showing ${firstResultNum}-${lastResultNum} of ${pagination.totalCount} results`
+}
+
+// Handle sort order button click
+document.getElementById('sortOrderButton').addEventListener('click', function() { toggleSortOrder(this); });
+
+// Handle sort request
+document.getElementById('sortApplyButton').addEventListener('click', async function() {
+
+    if (checkColumnSelected(sortColumn)) sortColumn.classList.remove('input-error');
+    else {
+        sortColumn.classList.add('input-error');
+        return;
     }
 
-    // Add the sorting order logic to apply the sorting when the "Apply" button is clicked
-    document.getElementById('sortApplyButton').addEventListener('click', function() {
-        const sortByValue = document.getElementById('sortBy').value;
-        const order = document.getElementById('sortOrderButton').textContent.toLowerCase(); // 'ascending' or 'descending'
-        
-        // Apply sorting logic based on the selected "Sort By" and the order (ascending or descending)
-        console.log(`Sort by: ${sortByValue}, Order: ${order}`);
-        // You can implement the sorting logic here based on your data and order
-    });
+    resetFilterValues();
+
+    const path = `sort?sortBy=${sortColumn.value}&sortOrder=${mapping[ordering]}`;
+
+    currentPath = path;
+
+    // request to backend challenges with the given sorting
+    const results = await fetchAvailableChallenges(path);
+
+    // Check if any result
+    if (results.length > 0) {
+        showChallenges(results);
+    } else {
+        // Display no results obtained
+        showNoResults();
+    }
+});
+
+// Handle filter request
+document.getElementById('filterApplyButton').addEventListener('click', async function() {
+    
+    if (checkColumnSelected(filterColumn)) {
+        filterColumn.classList.remove('input-error');
+    } else {
+        filterColumn.classList.add('input-error');
+        return;
+    }
+
+    if (searchInput.value !== '') {
+        searchInput.classList.remove('input-error');
+
+        resetSortValues();
+
+        const path = `filter?filterBy=${filterColumn.value}&filterValue=${encodeURIComponent(searchInput.value)}`;
+
+        currentPath = path;
+
+        // request to backend challenges with the given filter
+        const results = await fetchAvailableChallenges(path);
+
+        // Check if any result
+        if (results.length > 0) {
+            showChallenges(results);
+        } else {
+            // Display no results obtained
+            showNoResults();
+        }
+
+    } else {
+        // Input is empty, show "error"
+        searchInput.classList.add('input-error');
+    }
+});
+
+// handle previous and next buttons
+document.getElementById("prevPage").addEventListener('click', function() {
+    // check if we can go to previous page
+    if (currentPage-1 >= 1) {
+        currentPage -= 1;
+        moveToPage(currentPage);
+    }
+});
+
+// handle previous and next buttons
+document.getElementById("nextPage").addEventListener('click', function() {
+    // check if we can go to next page
+    if (currentPage+1 <= maxPage) {
+        currentPage += 1;
+        moveToPage(currentPage);
+    }
 });

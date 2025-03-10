@@ -62,7 +62,7 @@ h1 {
 }
 
 /* Ensuring the selects and buttons fit in a row */
-#sortBy, #columnSelect {
+#sortBy, #filterBy {
     width: 180px; /* Ensures selects fit nicely */
 }
 
@@ -133,10 +133,64 @@ input:focus, select:focus {
     justify-content: space-between;
     align-items: center;
     border-radius: 10px;
-    width: 110%;
-    height: 60px;
+    width: 100%;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+}
+
+/* Challenge content (flex row layout) */
+.challenge span {
+    display: inline-block;
+    margin-right: 10px; /* Space between elements */
+}
+
+.challenge .game-details {
+    flex-grow: 1; /* Game ID and Creator take more space */
+    text-align: left; /* Align text to the left */
+    font-size: 14px; /* Smaller font for game details */
+    display: flex;
+    flex-direction: row;
+    gap: 10px; /* Adds space between game ID and creator */
+}
+
+.challenge .game-id,
+.challenge .game-creator {
+    font-size: 12px; /* Smaller font for game ID and creator */
+}
+
+.challenge .game-details strong {
+    font-weight: bold; /* Make the game creator bold */
+}
+
+/* Adjusted layout for players, rounds, and creation date */
+.challenge .game-stats {
+    display: flex;
+    flex-grow: 2; /* Stats take more space */
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 14px; /* Same font size for stats */
+    gap: 15px; /* Space between players, rounds, and creation time */
+}
+
+.challenge .game-stats .creation-time {
+    font-size: 14px; /* Same size as other stats like players */
+    color: #6c757d; /* Muted color */
+}
+
+.challenge .game-stats span {
+    margin-left: 10px; /* Space between each stat */
+}
+
+/* Game Type Display */
+.challenge .public {
+    color: green;
+    font-weight: bold;
+}
+
+.challenge .private {
+    color: red;
+    font-weight: bold;
 }
 
 /* Pagination Info at the top right */
@@ -176,4 +230,93 @@ input:focus, select:focus {
     display: flex;
     justify-content: center;
     font-size: 16px;
+}
+
+.input-error {
+    border-color: #D8000C !important;  /* Red border for inputs with errors */
+}
+
+/* Game Code Popup */
+.game-code-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.popup-content h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.popup-content input {
+    padding: 10px;
+    width: 80%;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #d2d2d7;
+}
+
+/* Close button (X) */
+.popup-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #dc3545;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.popup-content .close-btn:hover {
+    color: #c82333;
+}
+
+.popup-content button {
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.popup-content button:hover {
+    background-color: #0056b3;
+}
+
+.popup-content #closePopup {
+    background-color: #dc3545; /* Red for close button */
+}
+
+.popup-content #closePopup:hover {
+    background-color: #c82333;
+}
+
+/* Hidden error message below input */
+.popup-content .error-message {
+    display: none;
+    color: red;
+    margin-bottom: 10px;
+    font-size: 14px;
 }

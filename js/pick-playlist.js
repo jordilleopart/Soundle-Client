@@ -1,5 +1,3 @@
-const address = "http://localhost:3000"
-
 // Function to get all URL parameters as an object
 function getUrlParameters() {
     const params = new URLSearchParams(window.location.search);
@@ -42,7 +40,7 @@ playlists.forEach(playlist => {
         };
 
         // Send request to back-end to create the game
-        fetch(`${address}/game/create`, {
+        fetch(`${config.address}/game/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Important for JSON payload
@@ -51,7 +49,6 @@ playlists.forEach(playlist => {
             body: JSON.stringify(payload) // Send the payload in the request body
         })
         .then(response => {
-            console.log(`1st response: ${response.status}`)
             switch (response.status) {
                 case 200:
                     return response.json();
@@ -67,9 +64,9 @@ playlists.forEach(playlist => {
             }
         })
         .then(jsonData => {
-
+            
             // creation of game was succesful, then join game
-            fetch(`${address}/game/join/${jsonData.gameId}`, {
+            fetch(`${config.address}/game/join/${jsonData.gameId}?code=${jsonData.code}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Important for JSON payload
@@ -77,13 +74,13 @@ playlists.forEach(playlist => {
                 }
             })
             .then(response => {
-                console.log(`2nd response: ${response.status}`)
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
                             // Move to corresponding lobby
                             window.location.href = `lobby.html?gameId=${data.gameId}`;
                         })
+                        break;
                     default:
                         // Handle other error responses (e.g., 422, 500, etc.)
                         response.json().then(data => {
