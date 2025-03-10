@@ -4,8 +4,9 @@ const config = {
 }
 
 class Message {
-    constructor(type, author, content) {
+    constructor(type, subtype, author, content) {
         this.type = type;
+        this.subtype = subtype;
         this.author = author;
         this.content = content;
     }
@@ -16,7 +17,7 @@ class Message {
             input = JSON.parse(input); // Parse JSON string into an object
         }
     
-        return new Message(input.type, input.author, input.content);
+        return new Message(input.type, input.subtype, input.author, input.content);
     }
 }
 
@@ -58,7 +59,7 @@ class WebSocketManager {
     // Send a message to the server through the WebSocket
     sendMessage(message) {
         if (this.socket) {
-            this.socket.send(JSON.stringify(message));
+            this.socket.send(message);
         } else {
             console.log('WebSocket is not connected');
         }
@@ -130,15 +131,22 @@ class Chat {
         this.history.push(message);  // Store message in history
         console.log("New message received:", message);
 
-        // Only proceed if the #chat-messages div exists and is cached
         if (this.chatMessagesDiv) {
-            if (message.author === localStorage.getItem('username')) {
-                this.addMessageToChat(message, 'sent');
-            } else if (message.author === 'system') {
-                this.addMessageToChat(message, 'system');
-                this.updateUsersInLobby();
-            } else {
-                this.addMessageToChat(message, 'received');
+            // Handle incoming messages depending on the type
+            switch (message.type) {
+                case "chat":
+                    console.log(message.author)
+                    if (message.author === localStorage.getItem('username')) this.addMessageToChat(message, 'sent');
+                    else if (message.author) this.addMessageToChat(message, 'received');
+                    else {
+                        console.log(message.subtype)
+                        this.addMessageToChat(message, message.subtype);
+                    }
+                    break;
+                case "system":
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -149,18 +157,15 @@ class Chat {
         
         // Add the provided class (e.g., 'sent', 'received', or 'system')
         newMessage.classList.add('message', messageClass);
-        
-        const authorElement = document.createElement('div');
-        authorElement.classList.add('message-author');
 
-        // If the message is not from 'system', display the author's name above the content
-        if (messageClass === 'sent') {
-            authorElement.textContent = 'You'; // Set the author's name
-        } else if (messageClass !== 'system') {
+        if (messageClass !== 'system') {
+            const authorElement = document.createElement('div');
+            authorElement.classList.add('message-author');
             authorElement.textContent = messageElement.author; // Set the author's name
+            newMessage.appendChild(authorElement); // Add the author to the message
+        } else {
+            this.updateUsersInLobby();
         }
-
-        if (messageClass !== 'system') newMessage.appendChild(authorElement); // Add the author to the message
         
         // Add the message content (the actual text)
         const contentElement = document.createElement('div');

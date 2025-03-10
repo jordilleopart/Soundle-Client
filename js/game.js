@@ -1,6 +1,6 @@
-// Configuration and Global Variables
-const address = "http://localhost:3000";
-const socket = new WebSocket('ws://localhost:3000');
+var lobbyId = undefined;
+const chatInput = document.querySelector('.chat-input input');
+const sendButton = document.getElementById('send-btn');
 
 // Game State Variables
 let currentStep = 0;
@@ -25,35 +25,21 @@ const elements = [
 ];
 const attemptBoxes = document.querySelectorAll('.attempt-box');
 
-// WebSocket Event Listeners
-socket.addEventListener('open', function (event) {
-    console.log('Connected to WebSocket server');
-});
-
-socket.addEventListener('message', function (event) {
-    const data = JSON.parse(event.data);
-    if (data.type === 'message') {
-        showMessages([data.message]);
-    } else if (data.type === 'guessed') {
-        showGuessed([data.guessed]);
-    }
-});
-
 //TODO: event listener that recives some message and plays/stops music
 /* this is just a draft I havent tested it yet, if it works we have to deactivate the possibility to play music with the play button */
-socket.addEventListener('play', function (event) {
-    const data = JSON.parse(event.data);
-    if (data.type === 'play') {
-        togglePlayPause();
-    }
-});
+// socket.addEventListener('play', function (event) {
+//     const data = JSON.parse(event.data);
+//     if (data.type === 'play') {
+//         togglePlayPause();
+//     }
+// });
 
-socket.addEventListener('stop', function (event){
-    const data = JSON.parse(event.data);
-    if (data.type === 'stop') {
-        togglePlayPause();
-    }
-});
+// socket.addEventListener('stop', function (event){
+//     const data = JSON.parse(event.data);
+//     if (data.type === 'stop') {
+//         togglePlayPause();
+//     }
+// });
 
 // TODO: music information should be send through websockets instead of using API calls
 
@@ -146,74 +132,32 @@ function togglePlayPause() {
 // Game Input and Validation Functions
 function checkUserInput(userInput) {
     const currentTrack = trackName.trim();
+    const username = localStorage.getItem('username');
 
     if (userInput == "") {
         userInput = "Skipped";
     }
 
     if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
-        
-        //TODO: this works now but should be changed to be done with websockets
-        showMissed(["username has missed the track"]);
-        
+        // update box and leaderboard
         attemptBoxes[currentStep].style.backgroundColor = 'red';
-        updateUserAttempts('Username3', 'miss', currentStep);
+        updateUserAttempts(username, 'miss', currentStep);
 
+        // show next hint
         revealNextTrackElement();
-        socket.send(JSON.stringify({ type: 'message', data: userInput }));
-    } else {
 
-        //TODO: this works now but should be changed to be done with websockets
-        showGuessed(["username has guessed the track"]);
-       
-       
+        // send message that we have missed
+        chat.sendMessage(JSON.stringify({type: "chat", subtype: "incorrect", content: `${username} missed attempt #${currentStep}.`}));
+    } else {
         //this shoulde done also with websockets
-        updateUserPoints("Username3", 100);
-        updateUserAttempts('Username3', 'guessed', currentStep);
+        updateUserPoints(username, 100);
+        updateUserAttempts(username, 'guessed', currentStep);
         attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
         
-        guessesLeft = 0; 
-        socket.send(JSON.stringify({ type: 'guessed', data: "username has guessed the track" }));
+        guessesLeft = 0;
+        // send message that we have guessed correctly
+        chat.sendMessage(JSON.stringify({type: "chat", subtype: "correct", content: `${username} guessed the track in attempt #${currentStep+1}.`}));
     }
-}
-
-// Chat and Leaderboard Functions
-function showMessages(messages) {
-    const chatMessages = document.querySelector('.chat-messages');
-    messages.forEach(message => {
-        const messageItem = document.createElement('div');
-        messageItem.classList.add('message-sent');
-        messageItem.textContent = message;
-        chatMessages.appendChild(messageItem);
-    });
-    scrollToBottom(); // Scroll to the bottom after adding new messages
-}
-
-function showGuessed(guesses) {
-    const chatMessages = document.querySelector('.chat-messages');
-    guesses.forEach(guess => {
-        const messageItem = document.createElement('div');
-        messageItem.classList.add('message-correct');
-        messageItem.textContent = guess;
-        chatMessages.appendChild(messageItem);
-    });
-    scrollToBottom(); // Scroll to the bottom after adding new messages
-}
-
-function showMissed(guesses) {
-    const chatMessages = document.querySelector('.chat-messages');
-    guesses.forEach(guess => {
-        const messageItem = document.createElement('div');
-        messageItem.classList.add('message-incorrect');
-        messageItem.textContent = guess;
-        chatMessages.appendChild(messageItem);
-    });
-    scrollToBottom(); // Scroll to the bottom after adding new messages
-}
-
-function scrollToBottom() {
-    const chatMessages = document.querySelector('.chat-messages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function showUsersWithLeaderboard(users) {
@@ -404,38 +348,22 @@ document.getElementById('user-input').addEventListener('keydown', function(event
     }
 });
 
-document.querySelector('.chat-input input').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        const userInput = event.target.value.trim();
-        if (userInput !== ""){
-
-            
-            // TODO: this has to be shown with websockets implementation, now its just for demonstration
-            // socket.send(JSON.stringify({ type: 'message', data: userInput }));
-
-            showMessages([`username: ${userInput}`]);
-            event.target.value = "";
-        }
-       
-    }
-});
-
-document.getElementById('send-btn').addEventListener('click', function(event) {
-    const messageInput = document.getElementById('message-input');
-    const userInput = messageInput.value.trim();
-
+sendButton.addEventListener('click', function() {
+    const userInput = chatInput.value.trim();
     if (userInput !== ""){
-        socket.send(JSON.stringify({ type: 'message', data: userInput }));
-
-        // TODO: this has to be shown with websockets implementation, now its just for demonstration
-        socket.send(JSON.stringify({ type: 'message', data: userInput }));
-
-        showMessages([`username: ${userInput}`]);
-        event.target.value = "";
+        // Create a new message element
+        chat.sendMessage(JSON.stringify({type: "chat", author: localStorage.getItem('username'), content: userInput}));
+        // reset input
+        chatInput.value = "";
     }
-
 });
+
+chatInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendButton.click();
+    }
+});
+
 
 // Initial Setup
 updateTrackInfo(trackArtist, releaseDate, trackImage, trackName, urlYouTube);
@@ -459,10 +387,6 @@ document.getElementById("audio-player").oncanplay = function() {
 
 // Page Load Example Data
 document.addEventListener('DOMContentLoaded', () => {
-    showMessages(["username1: Hello, how are you?","username2: I'm good, thanks! How about you?","username3:I'm doing great, just waiting for the game to start!"]);   
-    showMissed(['username1 missed the track',"username2 missed the track"]);
-    showGuessed(['username1 guessed the track']);
-
     const users = [
         { username: 'Username', points: 100, attempts: 4 },
         { username: 'Username2', points: 80, attempts: 4 },
@@ -474,11 +398,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { username: 'Username6', points: 55, attempts: 4 },
     ];
 
-    
 
     showUsersWithLeaderboard(users);
 
     let gameProgress = 50;
     const progressSlider = document.getElementById('audio-progress');
     progressSlider.value = gameProgress;
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+	lobbyId = urlParams.get('gameId');
+
+    chat.connectToLobby(lobbyId);
 });

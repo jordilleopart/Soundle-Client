@@ -121,19 +121,17 @@ a:hover {
 }
 
 .message.incorrect {
-    background-color: #FB4B53;
-    color: white;
-    align-self: flex-start;
+    background: transparent;
+    color: #FB4B53;
+    align-self: center;
     width: 100% !important; /* Maximum width of message */
 }
 
-.message-correct {
-    background-color: #4CD964; 
-    color: white;
+.message.correct {
+    background: transparent;
+    color: #4CD964; 
     align-self: center;
     width: 100% !important; /* Maximum width of message */
-    margin-bottom: 10px;
-    text-align: center;
 }
 
 /* Optional: Styles for the chat panel (container) */
