@@ -9,9 +9,6 @@ cardsContainer.addEventListener('click', (event) => {
         // Get the link inside the clicked card
         const link = card.querySelector('a');
         
-        // Optional: You can perform actions before navigating
-        console.log('Card clicked:', link.href);
-        
         // Navigate to the link's href (default action)
         window.location.href = link.href;
     }
