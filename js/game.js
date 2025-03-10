@@ -154,7 +154,7 @@ function checkUserInput(userInput) {
     if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
         
         //TODO: this works now but should be changed to be done with websockets
-        showMissed(["username has guessed the track"]);
+        showMissed(["username has missed the track"]);
         
         attemptBoxes[currentStep].style.backgroundColor = 'red';
         updateUserAttempts('Username3', 'miss', currentStep);
@@ -365,7 +365,7 @@ document.getElementById('shuffle-btn').addEventListener('click', function() {
     attemptBoxes.forEach(box => box.style.backgroundColor = '');
 
     const token = localStorage.getItem('jwtToken');
-    fetch(`${address}/track/random`, {
+    fetch(`${config.address}/track/random`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -404,7 +404,7 @@ document.getElementById('user-input').addEventListener('keydown', function(event
     }
 });
 
-document.getElementById('message-input').addEventListener('keydown', function(event) {
+document.querySelector('.chat-input input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault();
         const userInput = event.target.value.trim();
@@ -412,7 +412,7 @@ document.getElementById('message-input').addEventListener('keydown', function(ev
 
             
             // TODO: this has to be shown with websockets implementation, now its just for demonstration
-            socket.send(JSON.stringify({ type: 'message', data: userInput }));
+            // socket.send(JSON.stringify({ type: 'message', data: userInput }));
 
             showMessages([`username: ${userInput}`]);
             event.target.value = "";
@@ -479,6 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showUsersWithLeaderboard(users);
 
     let gameProgress = 50;
-    const progressSlider = document.getElementById('game-progress');
+    const progressSlider = document.getElementById('audio-progress');
     progressSlider.value = gameProgress;
 });
