@@ -90,8 +90,10 @@ class Chat {
         this.history = [];
         this.chatMessagesDiv = null;  // Cached reference to the chat container
         this.userListDiv = null;  // Cached reference to the user list container
+        this.startButton = null;
         this.maxPlayers = null;  // Initialize maxPlayers to null
         this.currentUsers = null; // Initialize currentUsers to null
+        this.master = null;
         Chat.instance = this;
     }
 
@@ -112,6 +114,7 @@ class Chat {
     cacheDivElements() {
         this.chatMessagesDiv = document.querySelector('.chat-messages');  // Get the first matching element for chat
         this.userListDiv = document.querySelector('.user-list');  // Get the first matching element for user list
+        this.startButton = document.querySelector('.start-button');
     }
 
     // Method to set maxPlayers and currentUsers
@@ -135,11 +138,9 @@ class Chat {
             // Handle incoming messages depending on the type
             switch (message.type) {
                 case "chat":
-                    console.log(message.author)
                     if (message.author === localStorage.getItem('username')) this.addMessageToChat(message, 'sent');
                     else if (message.author) this.addMessageToChat(message, 'received');
                     else {
-                        console.log(message.subtype)
                         this.addMessageToChat(message, message.subtype);
                     }
                     break;
@@ -187,56 +188,54 @@ class Chat {
         // Get the JWT token from local storage
         const token = localStorage.getItem('jwtToken');
 
-        // Fetch the list of users in the lobby (replace URL with your actual endpoint)
+        // Fetch the list of users in the lobby
         fetch(`${config.address}/game/users?gameId=${this.lobby}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json', // Important for JSON payload
-                'Authorization': `Bearer ${token}` // Send the JWT token in the header
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         })
-        .then(response => {
-            switch (response.status) {
-                case 200:
-                    return response.json();
-                default:
-                    // Handle other error responses (e.g., 500, etc.)
-                    response.json().then(data => {
-                        sessionStorage.setItem('httpStatus', response.status);
-                        sessionStorage.setItem('customMessage', data.message);
-                    });
-                    // Redirect to error-template.html upon error
-                    window.location.href = 'error-template.html';
-                    break;
-            }
-        })
+        .then(response => response.json())
         .then(data => {
-            // Ensure the response structure has the 'users' array
             const users = data.users;
 
-            // If there are no users or the users array is empty, clear the list and return
             if (!users || users.length === 0) {
-                this.userListDiv.innerHTML = '';  // Clear the user list div
+                this.userListDiv.innerHTML = '';  // Clear user list
                 return;
             }
 
-            // Clear existing user elements in the list
+            // Clear the existing list
             this.userListDiv.innerHTML = '';
 
-            // Get the username of the current logged-in user
-            const currentUsername = localStorage.getItem('username');
+            console.log(users);
 
-            // Loop through the list of users and add each one to the user list
-            users.forEach(user => {
+            // Loop through the users and add them to the list
+            users.forEach((user, index) => {
                 const userDiv = document.createElement('div');
                 userDiv.classList.add('user');  // Add a general 'user' class for styling
+
+                // Set the first user as the master and add a crown for them
+                if (index === 0) {
+                    this.master = user.user_name;  // Set the master as the first user
+
+                    console.log(this.master);
+
+                    const crownDiv = document.createElement('div');
+                    crownDiv.classList.add('user-crown');
+                    const crownImage = document.createElement('img');
+                    crownImage.src = '../img/crown.png'; // Placeholder path for the crown
+                    crownImage.alt = 'Master';
+                    crownDiv.appendChild(crownImage);
+                    userDiv.appendChild(crownDiv);  // Append crown above the user icon
+                }
 
                 // Create the user icon element
                 const userIconDiv = document.createElement('div');
                 userIconDiv.classList.add('user-icon');
                 const userIcon = document.createElement('img');
-                userIcon.src = '../img/person.crop.circle.fill-grey.png';  // Default image
-                userIcon.alt = user.user_name;  // Set the alt text to the username
+                userIcon.src = '../img/person.crop.circle.fill-grey.png';
+                userIcon.alt = user.user_name;
                 userIconDiv.appendChild(userIcon);
 
                 // Create the username element
@@ -244,25 +243,26 @@ class Chat {
                 usernameDiv.classList.add('username');
                 usernameDiv.textContent = user.user_name;
 
-                // Set a different background color for the current user
-                if (user.user_name === currentUsername) {
-                    userDiv.style.backgroundColor = '#d3f4ff';  // Light blue background for the current user (you can change the color)
+                // Set a background color for the current logged-in user
+                if (user.user_name === localStorage.getItem('username')) {
+                    userDiv.style.backgroundColor = '#d3f4ff'; // Highlight the current user
                 }
 
-                // Append the icon and username to the user div
+                // Append icon and username to the user div
                 userDiv.appendChild(userIconDiv);
                 userDiv.appendChild(usernameDiv);
 
-                // Append the user div to the user-list container
+                // Append the user div to the user list
                 this.userListDiv.appendChild(userDiv);
             });
 
-            // Update the number of users in the room (currentUsers/maxPlayers)
-            const currentUsers = users.length; // Get the current number of users
-            const maxPlayers = this.maxPlayers; // Get the max players value (you might already have this in your context)
-            
-            // Update the users count element with the new value
-            document.getElementById('users-count').textContent = `${currentUsers}/${maxPlayers}`;
+            // Update start button
+            if (this.master === localStorage.getItem('username')) this.startButton.classList.remove('hidden');
+            else this.startButton.classList.add('hidden');
+
+            // Update user count
+            this.currentUsers = users.length;
+            document.getElementById('users-count').textContent = `${this.currentUsers}/${this.maxPlayers}`;
         })
         .catch(error => {
             console.error('Error fetching users:', error);

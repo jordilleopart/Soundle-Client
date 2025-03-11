@@ -36,13 +36,15 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     flex-grow: 1;
-    max-height: 280px; /* Set max height for the scrollable list */
+    max-height: 320px; /* Set max height for the scrollable list */
     overflow-y: auto; /* Make it scrollable */
+    overflow-x: hidden;
     padding: 10px; /* Optional: add padding for better spacing */
 }
 
 /* Individual user container */
 .user {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center; /* Center content horizontally */
