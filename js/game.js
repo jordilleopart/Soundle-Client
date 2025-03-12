@@ -63,6 +63,29 @@ function getRandomTrack() {
     .catch(error => console.error('Error fetching data:', error));
 };
 
+// Define the starting time for the timer (in seconds)
+let timeLeft = 45; // Example: 45 seconds
+
+// Select the elements for the timer and play button
+const timerElement = document.getElementById("timer");
+
+// Function to update the timer display
+function updateTimer() {
+    // Update the displayed timer
+    timerElement.textContent = timeLeft;
+
+    // If time is up, stop the timer
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval); // Stop the countdown
+        console.log("Time's up!");
+
+        game.guessesLeft = 0;
+
+        if (localStorage.getItem('master') === localStorage.getItem('username')) document.getElementById('next-button').classList.remove('hidden');
+    }
+}
+
+
 // Page Load
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -75,5 +98,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Play music on load
     setTimeout(() => {
         game.togglePlayPause();
+            // Start the countdown by updating every second
+        timerInterval = setInterval(() => {
+            // Decrease the time by 1 second
+            timeLeft--;
+            updateTimer(); // Update the display with the new time
+        }, 1000); // Run the function every 1000 milliseconds (1 second)
     }, 1000);
+});
+
+let customLeave = false; // Flag to track if the user clicked the "Next" button
+
+// Function to perform the fetch request when leaving
+function performLeaveAction() {
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    fetch(`${config.address}/game/leave/${chat.lobby}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        },
+        keepalive: true,  // This flag ensures the request is sent even if the page is unloading
+    });
+}
+
+// Beforeunload event to call the performLeaveAction
+window.addEventListener('beforeunload', (event) => {
+    // Check if the page is being refreshed by using sessionStorage
+    if (!customLeave) {
+        performLeaveAction();
+    }
 });

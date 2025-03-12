@@ -28,6 +28,10 @@
                     <p id="track-artist" class="hidden">Artist: </p>
                 </div>
                 <div class="controls">
+                    <!-- Timer -->
+                    <div id="timer" class="timer">
+                        <p>45</p> <!-- This will be dynamically updated -->
+                    </div>
                     <div class="audio-player">
                         <!-- <button id="shuffle-btn">
                             <img src="../img/shuffle.png" alt="Shuffle">
@@ -59,9 +63,13 @@
                     <audio id="audio-player" src=""></audio>
                 </div>
             </div>
+            <div class="round-display">
+                <!-- Round Display -->
+                <p id="round-info">Round 1/10</p> <!-- This will be dynamically updated -->
+            </div>
             <div class="chat-panel">
                 <div class="panel-header">
-                    <span>Chat</span>
+                    <span>User in game</span>
                     <span>x</span>
                 </div>
                 <div class="chat-messages">
@@ -74,8 +82,10 @@
             </div>
             <div class="error-container">
             </div>
+
+            <!-- Leave button -->
+            <button id="next-button" class="next-button hidden">Next</button>
         </div>        
-        </div>
     </main>
     <!--<script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
     <script defer src="../js/game.js"></script>
