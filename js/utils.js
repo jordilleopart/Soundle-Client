@@ -1,14 +1,15 @@
 const config = {
     address: "http://localhost:3000",
-    websocketBaseAddress: "ws://localhost:3000/game"
+    websocketBaseAddress: "ws://localhost:3000/game",
 }
 
 class Message {
-    constructor(type, subtype, author, content) {
+    constructor(type, subtype, author, content, trackInfo = null) {
         this.type = type;
         this.subtype = subtype;
         this.author = author;
         this.content = content;
+        this.trackInfo = trackInfo;  // New field to hold track info (optional)
     }
 
     // Class method to instantiate message from either JSON object or JSON string
@@ -17,7 +18,9 @@ class Message {
             input = JSON.parse(input); // Parse JSON string into an object
         }
     
-        return new Message(input.type, input.subtype, input.author, input.content);
+        // Check for track info in the incoming message, and add it to the message object if available
+        const trackInfo = input.trackInfo || null;
+        return new Message(input.type, input.subtype, input.author, input.content, trackInfo);
     }
 }
 
@@ -93,7 +96,6 @@ class Chat {
         this.startButton = null;
         this.maxPlayers = null;  // Initialize maxPlayers to null
         this.currentUsers = null; // Initialize currentUsers to null
-        this.master = null;
         Chat.instance = this;
     }
 
@@ -144,8 +146,14 @@ class Chat {
                         this.addMessageToChat(message, message.subtype);
                     }
                     break;
-                case "system":
+                case "start":
+                    // Redirect to game
+                    window.location.href = `game.html?gameId=${this.lobby}&round=1`;
                     break;
+                case "track":
+                    const trackInfo = message.trackInfo;
+                    console.log(trackInfo)
+                    game.updateTrackInfo(trackInfo.track_artist, trackInfo.track_release_date, trackInfo.track_cover_url, trackInfo.track_name, trackInfo.track_audio_path);
                 default:
                     break;
             }
@@ -208,8 +216,6 @@ class Chat {
             // Clear the existing list
             this.userListDiv.innerHTML = '';
 
-            console.log(users);
-
             // Loop through the users and add them to the list
             users.forEach((user, index) => {
                 const userDiv = document.createElement('div');
@@ -217,9 +223,7 @@ class Chat {
 
                 // Set the first user as the master and add a crown for them
                 if (index === 0) {
-                    this.master = user.user_name;  // Set the master as the first user
-
-                    console.log(this.master);
+                    localStorage.setItem('master', user.user_name);  // Set the master as the first user
 
                     const crownDiv = document.createElement('div');
                     crownDiv.classList.add('user-crown');
@@ -257,7 +261,7 @@ class Chat {
             });
 
             // Update start button
-            if (this.master === localStorage.getItem('username')) this.startButton.classList.remove('hidden');
+            if (localStorage.getItem('master') === localStorage.getItem('username')) this.startButton.classList.remove('hidden');
             else this.startButton.classList.add('hidden');
 
             // Update user count
@@ -274,7 +278,6 @@ class Chat {
         this.websocketManager.sendMessage(message);
     }
 
-    // Reset the chat (clear history, disconnect WebSocket)
     reset() {
         this.lobby = null;
         this.history = [];
@@ -291,6 +294,232 @@ class Chat {
     }
 }
 
-
 // initialize the Chat instance
 const chat = Chat.getInstance();
+
+class Game {
+    constructor() {
+        this.trackArtist = "";
+        this.trackName = "";
+        this.trackImage = "";
+        this.releaseDate = "";
+        this.audioDuration = 30;
+        this.startTime = 50;
+        this.currentStep = 0;
+        this.guessesLeft = 4;
+    }
+
+    // Initialize the game with track information and initial setup
+    updateTrackInfo(artist, releaseDate, coverUrl, name, trackAudioBase64) {
+        // DOM Element References
+        this.elements = [
+            document.getElementById('track-year'),
+            document.getElementById('track-image'),
+            document.getElementById('track-artist')
+        ];
+
+        this.attemptBoxes = document.querySelectorAll('.attempt-box');
+
+
+        this.updateUserStatus();
+
+        this.trackArtist = artist;
+        this.trackName = name;
+        this.trackImage = coverUrl;
+        this.releaseDate = releaseDate;
+        this.updateTrackUI();
+        this.updateAudioPlayer(trackAudioBase64);
+    }
+
+    // Update Track information on the UI
+    updateTrackUI() {
+        document.getElementById('track-artist').textContent = `Artist: ${this.trackArtist}`;
+        document.getElementById('track-year').textContent = `Release date: ${new Date(this.releaseDate).toLocaleDateString('en-GB')}`;
+        document.getElementById('track-image').src = this.trackImage;
+    }
+
+    // Update Audio Player UI
+    updateAudioPlayer(trackAudioBase64) {
+        const audioPlayerElem = document.getElementById('audio-player');
+        audioPlayerElem.src = `data:audio/mp3;base64,${trackAudioBase64}`;
+        audioPlayerElem.load();
+        // audioPlayerElem.oncanplaythrough = () => {
+        //     this.togglePlayPause();
+        // }
+    }
+
+    updateUserStatus() {
+        this.currentStep = 0;
+        this.guessesLeft = 4;
+        this.resetUserAttempts();
+
+        this.elements.forEach(element => element.classList.add('hidden'));
+        this.attemptBoxes.forEach(box => box.style.backgroundColor = '');
+    }
+
+    // Reveal next track element (hint)
+    revealNextTrackElement() {
+        if (this.currentStep < this.elements.length) {
+            this.elements[this.currentStep].classList.remove('hidden');
+            this.currentStep++;
+        } else {
+            this.currentStep++;
+        }
+    }
+
+    // Handle user input (check if correct or incorrect)
+    checkUserInput(userInput) {
+        const currentTrack = this.trackName.trim();
+        const username = localStorage.getItem('username');
+
+        if (userInput === "") userInput = "Skipped";
+
+        if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
+            this.attemptBoxes[this.currentStep].style.backgroundColor = 'red';
+            this.updateUserAttempts(username, 'miss', this.currentStep);
+            this.revealNextTrackElement();
+            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "incorrect", content: `${username} missed attempt #${this.currentStep}.` }));
+        } else {
+            this.updateUserPoints(username, 100);
+            this.updateUserAttempts(username, 'guessed', this.currentStep);
+            this.attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
+            this.guessesLeft = 0;
+            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "correct", content: `${username} guessed the track in attempt #${this.currentStep+1}.` }));
+        }
+    }
+
+    // Update User Points
+    updateUserPoints(username, pointsToAdd) {
+        const userRows = document.querySelectorAll('.user-row');
+        userRows.forEach(row => {
+            const usernameElem = row.querySelector('.username');
+            if (usernameElem && usernameElem.textContent === username) {
+                const pointsElem = row.querySelector('.points');
+                if (pointsElem) {
+                    const currentPoints = parseInt(pointsElem.textContent, 10);
+                    const newPoints = currentPoints + pointsToAdd;
+                    pointsElem.textContent = newPoints;
+                }
+            }
+        });
+    }
+
+    // Update User Attempts (whether correct or incorrect)
+    updateUserAttempts(username, state, currentInput) {
+        const userRows = document.querySelectorAll('.user-row');
+        userRows.forEach(row => {
+            const usernameElem = row.querySelector('.username');
+            if (usernameElem && usernameElem.textContent.trim() === username) {
+                const attemptBoxes = row.querySelectorAll('.attempts .attempt-box');
+                attemptBoxes.forEach((box, index) => {
+                    if (index < currentInput) {
+                        box.classList.add('attempt-box-incorrect');
+                    } else if (index === currentInput) {
+                        box.classList.add(state === 'guessed' ? 'attempt-box-correct' : 'attempt-box-incorrect');
+                    }
+                });
+            }
+        });
+    }
+
+    // Show Users with Leaderboard
+    showUsersWithLeaderboard(users) {
+        const leaderboardList = document.querySelector('.leaderboard-list');
+        leaderboardList.innerHTML = '';
+
+        users.forEach(user => {
+            const userRow = this.createUserRow(user);
+            leaderboardList.appendChild(userRow);
+        });
+    }
+
+    // Create user row for leaderboard
+    createUserRow(user) {
+        const userRow = document.createElement('div');
+        userRow.classList.add('user-row');
+
+        const profilePic = document.createElement('img');
+        profilePic.src = "../img/person.crop.circle.fill-grey.png";
+        profilePic.alt = user.username;
+        profilePic.classList.add('profile-pic');
+
+        const userDetails = document.createElement('div');
+        userDetails.classList.add('user-details');
+
+        const userInfo = document.createElement('div');
+        userInfo.classList.add('user-info');
+
+        const usernameElem = document.createElement('p');
+        usernameElem.classList.add('username');
+        usernameElem.textContent = user.username;
+
+        const pointsElem = document.createElement('p');
+        pointsElem.classList.add('points');
+        pointsElem.textContent = user.points;
+
+        userInfo.appendChild(usernameElem);
+        userInfo.appendChild(pointsElem);
+
+        const attemptsElem = document.createElement('div');
+        attemptsElem.classList.add('attempts-leaderboard');
+
+        for (let i = 0; i < user.attempts; i++) {
+            const attemptBox = document.createElement('div');
+            attemptBox.classList.add('attempt-box');
+            attemptsElem.appendChild(attemptBox);
+        }
+
+        userDetails.appendChild(userInfo);
+        userDetails.appendChild(attemptsElem);
+
+        userRow.appendChild(profilePic);
+        userRow.appendChild(userDetails);
+
+        return userRow;
+    }
+
+    // Reset User Attempts
+    resetUserAttempts() {
+        const userRows = document.querySelectorAll('.user-row');
+        userRows.forEach(row => {
+            const attemptBoxes = row.querySelectorAll('.attempt-box');
+            attemptBoxes.forEach(box => {
+                box.classList.remove('attempt-box-correct', 'attempt-box-incorrect');
+            });
+        });
+    }
+
+    // Handle Audio Play/Pause
+    togglePlayPause() {
+        const playButtonIcon = document.getElementById('play-icon');
+        const audioPlayer = document.getElementById('audio-player');
+        if (audioPlayer.paused) {
+            audioPlayer.currentTime = this.startTime;
+            audioPlayer.play();
+            playButtonIcon.src = '../img/pause.fill.png';
+            this.updateProgress();
+            setTimeout(() => {
+                audioPlayer.pause();
+                playButtonIcon.src = '../img/play.fill.png';
+                audioPlayer.currentTime = this.startTime;
+            }, this.audioDuration * 1000);
+        } else {
+            audioPlayer.pause();
+            playButtonIcon.src = '../img/play.fill.png';
+            audioPlayer.currentTime = this.startTime;
+        }
+    }
+
+    // Update Progress Bar
+    updateProgress() {
+        const audioPlayer = document.getElementById('audio-player');
+        const progressSlider = document.getElementById('audio-progress');
+        if (audioPlayer && !audioPlayer.paused) {
+            progressSlider.value = (audioPlayer.currentTime - this.startTime) / this.audioDuration * 100;
+            requestAnimationFrame(this.updateProgress.bind(this));
+        }
+    }
+}
+
+// Game Initialization
+const game = new Game();

@@ -122,10 +122,13 @@ document.getElementById("leave-button").addEventListener("click", (event) => {
 
 
 startButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default button action
-    console.log("hello")
-    customLeave = true;  // Set the flag to true when the user clicks "Start"
-    window.location.href = `game.html?gameId=${lobbyId}`; // Redirect after leaving the room
+    if (localStorage.getItem('master') === localStorage.getItem('username')) {
+        event.preventDefault(); // Prevent default button action
+        customLeave = true;  // Set the flag to true when the user clicks "Start"
+
+        // Send start signal to all players
+        chat.sendMessage(JSON.stringify({type: "start"}));
+    }
 })
 
 // Beforeunload event to call the performLeaveAction
