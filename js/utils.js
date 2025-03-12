@@ -307,6 +307,7 @@ class Game {
         this.startTime = 50;
         this.currentStep = 0;
         this.guessesLeft = 4;
+        this.canBePlayed = false;
     }
 
     // Initialize the game with track information and initial setup
@@ -343,9 +344,9 @@ class Game {
         const audioPlayerElem = document.getElementById('audio-player');
         audioPlayerElem.src = `data:audio/mp3;base64,${trackAudioBase64}`;
         audioPlayerElem.load();
-        // audioPlayerElem.oncanplaythrough = () => {
-        //     this.togglePlayPause();
-        // }
+        audioPlayerElem.oncanplaythrough = () => {
+            this.canBePlayed = true;
+        }
     }
 
     updateUserStatus() {
@@ -382,7 +383,7 @@ class Game {
         } else {
             this.updateUserPoints(username, 100);
             this.updateUserAttempts(username, 'guessed', this.currentStep);
-            this.attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
+            this.attemptBoxes[this.currentStep].style.backgroundColor = '#4CAF50';
             this.guessesLeft = 0;
             chat.sendMessage(JSON.stringify({ type: "chat", subtype: "correct", content: `${username} guessed the track in attempt #${this.currentStep+1}.` }));
         }
@@ -490,10 +491,10 @@ class Game {
     }
 
     // Handle Audio Play/Pause
-    togglePlayPause() {
+    togglePlayPause = () => {
         const playButtonIcon = document.getElementById('play-icon');
         const audioPlayer = document.getElementById('audio-player');
-        if (audioPlayer.paused) {
+        if (audioPlayer.paused && this.canBePlayed) {
             audioPlayer.currentTime = this.startTime;
             audioPlayer.play();
             playButtonIcon.src = '../img/pause.fill.png';
@@ -503,6 +504,7 @@ class Game {
                 playButtonIcon.src = '../img/play.fill.png';
                 audioPlayer.currentTime = this.startTime;
             }, this.audioDuration * 1000);
+            this.canBePlayed = false;
         } else {
             audioPlayer.pause();
             playButtonIcon.src = '../img/play.fill.png';

@@ -10,7 +10,7 @@ document.getElementById('show-elements-btn').addEventListener('click', function(
     }
 });
 
-document.getElementById('play-btn').addEventListener('click', game.togglePlayPause());
+document.getElementById('play-btn').addEventListener('click', game.togglePlayPause);
 
 document.getElementById('user-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && game.guessesLeft > 0) {
@@ -71,4 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chat.connectToLobby(lobbyId);
 
     if (localStorage.getItem('master') === localStorage.getItem('username')) getRandomTrack();
+
+    // Play music on load
+    setTimeout(() => {
+        game.togglePlayPause();
+    }, 1000);
 });
