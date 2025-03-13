@@ -136,7 +136,6 @@ class Chat {
     handleMessage = (messageData) => {
         const message = Message.fromJson(messageData);
         this.history.push(message);  // Store message in history
-        console.log("New message received:", message);
 
         if (this.chatMessagesDiv) {
             // Handle incoming messages depending on the type
@@ -153,7 +152,6 @@ class Chat {
                     window.location.href = `game.html?gameId=${this.lobby}&round=1`;
                     break;
                 case "next":
-                    console.log(this.lobby)
                     // Redirect to corresponding round
                     window.location.href = `game.html?gameId=${this.lobby}&round=${message.gameInfo.round}`;
                     break;
@@ -162,7 +160,6 @@ class Chat {
                     break;
                 case "track":
                     const trackInfo = message.trackInfo;
-                    console.log(trackInfo)
                     game.updateTrackInfo(trackInfo.track_artist, trackInfo.track_release_date, trackInfo.track_cover_url, trackInfo.track_name, trackInfo.track_audio_path);
                 default:
                     break;
@@ -185,6 +182,7 @@ class Chat {
         } else {
             setTimeout(() => {
                 this.updateUsersInLobby();
+                this.fetchUserInfo();
             }, 500);
         }
         
@@ -227,7 +225,6 @@ class Chat {
 
             // Clear the existing list
             this.userListDiv.innerHTML = '';
-
             // Loop through the users and add them to the list
             users.forEach((user, index) => {
                 const userDiv = document.createElement('div');
@@ -282,6 +279,41 @@ class Chat {
         })
         .catch(error => {
             console.error('Error fetching users:', error);
+        });
+    }
+
+    fetchUserInfo = () => {
+        const leaderboardElem = document.querySelector(".leaderboard-list");
+        if (!leaderboardElem) return;
+        console.log("hello")
+        leaderboardElem.innerHTML = '';  // Clears the content
+
+        // Get the JWT token from local storage
+        const token = localStorage.getItem('jwtToken');
+
+        // Fetch the list of users in the lobby
+        fetch(`${config.address}/game/users?gameId=${this.lobby}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const users = data.users;
+            
+            users.forEach(user => {
+                const element = game.createUserRow(user);
+                leaderboardElem.appendChild(element);
+            });
+        })
+        .catch(error => {
+            // Handle error parsing json
+            sessionStorage.setItem('httpStatus', 500);
+            sessionStorage.setItem('customMessage', "Internal Server Error");
+            // Redirect to error-template.html upon error
+            // window.location.href = 'error-template.html';
         });
     }
 
@@ -447,13 +479,13 @@ class Game {
     }
 
     // Create user row for leaderboard
-    createUserRow(user) {
+    createUserRow = (user) => {
         const userRow = document.createElement('div');
         userRow.classList.add('user-row');
 
         const profilePic = document.createElement('img');
         profilePic.src = "../img/person.crop.circle.fill-grey.png";
-        profilePic.alt = user.username;
+        profilePic.alt = user.user_name;
         profilePic.classList.add('profile-pic');
 
         const userDetails = document.createElement('div');
@@ -464,7 +496,7 @@ class Game {
 
         const usernameElem = document.createElement('p');
         usernameElem.classList.add('username');
-        usernameElem.textContent = user.username;
+        usernameElem.textContent = user.user_name;
 
         const pointsElem = document.createElement('p');
         pointsElem.classList.add('points');
@@ -476,7 +508,7 @@ class Game {
         const attemptsElem = document.createElement('div');
         attemptsElem.classList.add('attempts-leaderboard');
 
-        for (let i = 0; i < user.attempts; i++) {
+        for (let i = 0; i < this.guessesLeft; i++) {
             const attemptBox = document.createElement('div');
             attemptBox.classList.add('attempt-box');
             attemptsElem.appendChild(attemptBox);

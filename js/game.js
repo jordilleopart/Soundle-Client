@@ -58,7 +58,6 @@ function getRandomTrack() {
         });
     })
     .then(data => {
-        console.log(data)
         chat.sendMessage(JSON.stringify({type: "track", trackInfo: data}));
     })
     .catch(error => console.error('Error fetching data:', error));
