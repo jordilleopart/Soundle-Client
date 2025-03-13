@@ -30,7 +30,7 @@ function fillLobbyData(data) {
     console.log(data)
 
     // store number of rounds
-    localStorage.setItem('maxRounds', data.gameInfo.max_players);
+    localStorage.setItem('maxRounds', data.gameInfo.rounds);
 
     // Update the titles
     const pageTitle = document.querySelector('title');

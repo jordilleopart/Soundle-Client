@@ -4,12 +4,13 @@ const config = {
 }
 
 class Message {
-    constructor(type, subtype, author, content, trackInfo = null) {
+    constructor(type, subtype, author, content, trackInfo = null, gameInfo = null) {
         this.type = type;
         this.subtype = subtype;
         this.author = author;
         this.content = content;
         this.trackInfo = trackInfo;  // New field to hold track info (optional)
+        this.gameInfo = gameInfo;  // New field to hold game info (optional)
     }
 
     // Class method to instantiate message from either JSON object or JSON string
@@ -20,7 +21,8 @@ class Message {
     
         // Check for track info in the incoming message, and add it to the message object if available
         const trackInfo = input.trackInfo || null;
-        return new Message(input.type, input.subtype, input.author, input.content, trackInfo);
+        const gameInfo = input.gameInfo || null;
+        return new Message(input.type, input.subtype, input.author, input.content, trackInfo, gameInfo);
     }
 }
 
@@ -131,7 +133,7 @@ class Chat {
     }
 
     // Handle incoming WebSocket messages
-    handleMessage(messageData) {
+    handleMessage = (messageData) => {
         const message = Message.fromJson(messageData);
         this.history.push(message);  // Store message in history
         console.log("New message received:", message);
@@ -149,6 +151,14 @@ class Chat {
                 case "start":
                     // Redirect to game
                     window.location.href = `game.html?gameId=${this.lobby}&round=1`;
+                    break;
+                case "next":
+                    console.log(this.lobby)
+                    // Redirect to corresponding round
+                    window.location.href = `game.html?gameId=${this.lobby}&round=${message.gameInfo.round}`;
+                    break;
+                case "end":
+                    window.location.href = `leaderboard.html?gameId=${this.lobby}`;
                     break;
                 case "track":
                     const trackInfo = message.trackInfo;

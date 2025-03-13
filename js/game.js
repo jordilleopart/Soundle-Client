@@ -1,4 +1,5 @@
 var lobbyId = undefined;
+var round = undefined;
 const chatInput = document.querySelector('.chat-input input');
 const sendButton = document.getElementById('send-btn');
 
@@ -64,7 +65,7 @@ function getRandomTrack() {
 };
 
 // Define the starting time for the timer (in seconds)
-let timeLeft = 45; // Example: 45 seconds
+let timeLeft = 30;
 
 // Select the elements for the timer and play button
 const timerElement = document.getElementById("timer");
@@ -85,13 +86,16 @@ function updateTimer() {
     }
 }
 
-
 // Page Load
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
 	lobbyId = urlParams.get('gameId');
+    round = parseInt(urlParams.get('round'), 10);
 
     chat.connectToLobby(lobbyId);
+
+    // upate round number
+    document.getElementById('round-info').innerText = `Round ${round}/${localStorage.getItem('maxRounds')}`;
 
     if (localStorage.getItem('master') === localStorage.getItem('username')) getRandomTrack();
 
@@ -107,6 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000); // Run the function every 1000 milliseconds (1 second)
     }, 1000);
 });
+
+document.getElementById('next-button').addEventListener('click', function() {
+    // redirect all users to either next round or leaderboard
+    if (round < localStorage.getItem('maxRounds')) {
+        const nextRound = round+1;
+        chat.sendMessage(JSON.stringify({type: "next", gameInfo: {"round": nextRound}}));
+    }
+    else chat.sendMessage(JSON.stringify({type: "end"}));
+})
 
 let customLeave = false; // Flag to track if the user clicked the "Next" button
 
