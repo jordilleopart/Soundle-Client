@@ -28,6 +28,10 @@ inputField.addEventListener('keypress', function(event) {
 
 function fillLobbyData(data) {
     console.log(data)
+
+    // store number of rounds
+    localStorage.setItem('maxRounds', data.gameInfo.max_players);
+
     // Update the titles
     const pageTitle = document.querySelector('title');
     pageTitle.innerText = `Soundle - ${data.gameInfo.user_name}'s game`;
@@ -38,6 +42,13 @@ function fillLobbyData(data) {
     // Update the author
     const gameAuthorElement = document.getElementById('game-creator');
     gameAuthorElement.textContent = `by ${data.gameInfo.user_name}`;
+
+    // Update game code if needed
+    if (data.gameInfo.game_type === "private") {
+        const gameCodeElement = document.getElementById('game-code');
+        gameCodeElement.innerHTML = 'Code: <strong>' + data.gameInfo.code + '</strong>';  // Added strong tag
+        gameCodeElement.classList.remove('hidden');
+    }
 
     // Update the number of users in the room
     const usersCountElement = document.getElementById('users-count');

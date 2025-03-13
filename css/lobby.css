@@ -146,3 +146,7 @@
 .leave-button:hover {
     background-color: #d13b3b; /* Slightly darker red on hover */
 }
+
+#game-code {
+    margin-top: 50px;
+}

@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Play music on load
     setTimeout(() => {
         game.togglePlayPause();
-            // Start the countdown by updating every second
+        
+        // Start the countdown by updating every second
         timerInterval = setInterval(() => {
             // Decrease the time by 1 second
             timeLeft--;

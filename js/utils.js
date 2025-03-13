@@ -173,7 +173,9 @@ class Chat {
             authorElement.textContent = messageElement.author; // Set the author's name
             newMessage.appendChild(authorElement); // Add the author to the message
         } else {
-            this.updateUsersInLobby();
+            setTimeout(() => {
+                this.updateUsersInLobby();
+            }, 500);
         }
         
         // Add the message content (the actual text)
