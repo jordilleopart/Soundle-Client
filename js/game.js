@@ -82,6 +82,8 @@ function updateTimer() {
         game.guessesLeft = 0;
 
         if (localStorage.getItem('master') === localStorage.getItem('username')) document.getElementById('next-button').classList.remove('hidden');
+    } else {
+        game.timeLeft = timeLeft;
     }
 }
 
@@ -120,7 +122,6 @@ document.getElementById('next-button').addEventListener('click', function() {
     else chat.sendMessage(JSON.stringify({type: "end"}));
 })
 
-let customLeave = false; // Flag to track if the user clicked the "Next" button
 
 // Function to perform the fetch request when leaving
 function performLeaveAction() {
@@ -140,7 +141,7 @@ function performLeaveAction() {
 // Beforeunload event to call the performLeaveAction
 window.addEventListener('beforeunload', (event) => {
     // Check if the page is being refreshed by using sessionStorage
-    if (!customLeave) {
+    if (!game.customLeave) {
         performLeaveAction();
     }
 });

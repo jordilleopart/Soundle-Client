@@ -153,9 +153,11 @@ class Chat {
                     break;
                 case "next":
                     // Redirect to corresponding round
+                    game.customLeave = true;
                     window.location.href = `game.html?gameId=${this.lobby}&round=${message.gameInfo.round}`;
                     break;
                 case "end":
+                    game.customLeave = true;
                     window.location.href = `leaderboard.html?gameId=${this.lobby}`;
                     break;
                 case "track":
@@ -174,11 +176,16 @@ class Chat {
         // Add the provided class (e.g., 'sent', 'received', or 'system')
         newMessage.classList.add('message', messageClass);
 
-        if (messageClass !== 'system') {
+        if (messageClass === "sent" || messageClass === "received") {
             const authorElement = document.createElement('div');
             authorElement.classList.add('message-author');
             authorElement.textContent = messageElement.author; // Set the author's name
             newMessage.appendChild(authorElement); // Add the author to the message
+        } else if (messageClass === "correct") {
+            game.updateUserAttempts(messageElement.gameInfo.username, "guessed", messageElement.gameInfo.attempt);
+            game.updateUserPoints(messageElement.gameInfo.username, messageElement.gameInfo.points);
+        } else if (messageClass === "incorrect") {
+            game.updateUserAttempts(messageElement.gameInfo.username, "miss", messageElement.gameInfo.attempt);
         } else {
             setTimeout(() => {
                 this.updateUsersInLobby();
@@ -351,7 +358,9 @@ class Game {
         this.startTime = 50;
         this.currentStep = 0;
         this.guessesLeft = 4;
+        this.timeLeft = 30;
         this.canBePlayed = false;
+        this.customLeave = false;
     }
 
     // Initialize the game with track information and initial setup
@@ -413,7 +422,7 @@ class Game {
     }
 
     // Handle user input (check if correct or incorrect)
-    checkUserInput(userInput) {
+    checkUserInput = (userInput) => {
         const currentTrack = this.trackName.trim();
         const username = localStorage.getItem('username');
 
@@ -421,15 +430,16 @@ class Game {
 
         if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
             this.attemptBoxes[this.currentStep].style.backgroundColor = 'red';
-            this.updateUserAttempts(username, 'miss', this.currentStep);
+            // this.updateUserAttempts(username, 'miss', this.currentStep);
+            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "incorrect", content: `${username} missed attempt #${this.currentStep}.`, gameInfo: {username: localStorage.getItem('username'), attempt: this.currentStep} }));
             this.revealNextTrackElement();
-            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "incorrect", content: `${username} missed attempt #${this.currentStep}.` }));
         } else {
-            this.updateUserPoints(username, 100);
-            this.updateUserAttempts(username, 'guessed', this.currentStep);
+            const pointsObtained = this.timeLeft * this.guessesLeft;
+            // this.updateUserPoints(username, pointsObtained);
+            // this.updateUserAttempts(username, 'guessed', this.currentStep);
             this.attemptBoxes[this.currentStep].style.backgroundColor = '#4CAF50';
             this.guessesLeft = 0;
-            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "correct", content: `${username} guessed the track in attempt #${this.currentStep+1}.` }));
+            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "correct", content: `${username} guessed the track in attempt #${this.currentStep+1}.`, gameInfo: {username: localStorage.getItem('username'), points: pointsObtained, attempt: this.currentStep} }));
         }
     }
 
@@ -455,7 +465,7 @@ class Game {
         userRows.forEach(row => {
             const usernameElem = row.querySelector('.username');
             if (usernameElem && usernameElem.textContent.trim() === username) {
-                const attemptBoxes = row.querySelectorAll('.attempts .attempt-box');
+                const attemptBoxes = row.querySelectorAll('.attempt-box');
                 attemptBoxes.forEach((box, index) => {
                     if (index < currentInput) {
                         box.classList.add('attempt-box-incorrect');
