@@ -1,25 +1,60 @@
 /* Main Content */
+/* Main Content */
 .main-content {
     display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
     height: 500px;
     padding: 20px;
     box-sizing: border-box;
+    gap: 40px;
+    position: relative;
 }
 
 /* Paneles de usuario y chat */
-.users-panel {
+.users-panel,
+.chat-panel {
+    width: 300px;
+    flex-shrink: 0;
     border: 1px solid #d2d2d7;
     border-radius: 15px;
     padding: 20px;
-    width: 300px;
-    max-height: 400px; /* Limit the height of the panel */
+    max-height: 400px;
     display: flex;
     flex-direction: column;
     margin: 40px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Información del reto (centrado) */
+.challenge-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+}
+
+/* Chat panel */
+.chat-panel {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Users panel */
+.users-panel {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Encabezado del panel */
