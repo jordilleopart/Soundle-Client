@@ -1,26 +1,3 @@
-
-
-function updateAttempts(username, attempts) {
-    const userRows = document.querySelectorAll('.user-row');
-    userRows.forEach(row => {
-        const usernameElem = row.querySelector('.username');
-        if (usernameElem && usernameElem.textContent === username) {
-            const attemptsElems = row.querySelectorAll('.attempt-box');
-            attemptsElems.forEach((attemptElem, index) => {
-                if (index < attempts.correct) {
-                    attemptElem.classList.add('correct-box');
-                    attemptElem.classList.remove('error-box');
-                } else if (index < attempts.correct + attempts.incorrect) {
-                    attemptElem.classList.add('error-box');
-                    attemptElem.classList.remove('correct-box');
-                } else {
-                    attemptElem.classList.remove('correct-box', 'error-box');
-                }
-            });
-        }
-    });
-}
-
 function showUsersFinalLeaderboard(users) {
     const leaderboardContainer = document.querySelector('.leaderboard-list');
     leaderboardContainer.innerHTML = ''; // Limpiar leaderboard
@@ -51,7 +28,7 @@ function showUsersFinalLeaderboard(users) {
 
             const usernameElem = document.createElement('p');
             usernameElem.classList.add('username');
-            usernameElem.textContent = users[index].username;
+            usernameElem.textContent = users[index].user_name;
 
             const pointsElem = document.createElement('p');
             pointsElem.classList.add('points');
@@ -125,21 +102,29 @@ function createUserRow(user, position) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const users = [
-        { username: 'Username1', points: 13, attempts: { correct: 2, incorrect: 2 } },
-        { username: 'Username2', points: 20, attempts: { correct: 1, incorrect: 3 } },
-        { username: 'Username3', points: 24, attempts: { correct: 3, incorrect: 1 } },
-        { username: 'Username4', points: 80, attempts: { correct: 0, incorrect: 4 } },
-        { username: 'Username5', points: 45, attempts: { correct: 4, incorrect: 0 } },
-        { username: 'Username11', points: 20, attempts: { correct: 1, incorrect: 3 } },
-        { username: 'Username12', points: 24, attempts: { correct: 3, incorrect: 1 } },
-        { username: 'Username13', points: 13, attempts: { correct: 2, incorrect: 2 } },
-        
+    const urlParams = new URLSearchParams(window.location.search);
+	const lobbyId = urlParams.get('gameId');
 
-        
-    ];
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
 
-    users.sort((a, b) => b.points - a.points);
+    // Fetch the list of users in the lobby
+    fetch(`${config.address}/game/users?gameId=${lobbyId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const users = data.users;
 
-    showUsersFinalLeaderboard(users);
+        users.sort((a, b) => b.points - a.points);
+
+        showUsersFinalLeaderboard(users);
+    })
+    .catch(error => {
+        console.error('Error fetching users:', error);
+    });
 });

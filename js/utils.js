@@ -292,7 +292,6 @@ class Chat {
     fetchUserInfo = () => {
         const leaderboardElem = document.querySelector(".leaderboard-list");
         if (!leaderboardElem) return;
-        console.log("hello")
         leaderboardElem.innerHTML = '';  // Clears the content
 
         // Get the JWT token from local storage

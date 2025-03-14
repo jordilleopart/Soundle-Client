@@ -27,8 +27,6 @@ inputField.addEventListener('keypress', function(event) {
 });
 
 function fillLobbyData(data) {
-    console.log(data)
-
     // store number of rounds
     localStorage.setItem('maxRounds', data.gameInfo.rounds);
 
