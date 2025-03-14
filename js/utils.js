@@ -430,7 +430,7 @@ class Game {
         if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
             this.attemptBoxes[this.currentStep].style.backgroundColor = 'red';
             // this.updateUserAttempts(username, 'miss', this.currentStep);
-            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "incorrect", content: `${username} missed attempt #${this.currentStep}.`, gameInfo: {username: localStorage.getItem('username'), attempt: this.currentStep} }));
+            chat.sendMessage(JSON.stringify({ type: "chat", subtype: "incorrect", content: `${username} missed attempt #${this.currentStep+1}.`, gameInfo: {username: localStorage.getItem('username'), attempt: this.currentStep} }));
             this.revealNextTrackElement();
         } else {
             const pointsObtained = this.timeLeft * this.guessesLeft;
