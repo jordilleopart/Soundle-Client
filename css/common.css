@@ -121,19 +121,17 @@ a:hover {
 }
 
 .message.incorrect {
-    background-color: #FB4B53;
-    color: white;
-    align-self: flex-start;
+    background: transparent;
+    color: #FB4B53;
+    align-self: center;
     width: 100% !important; /* Maximum width of message */
 }
 
-.message-correct {
-    background-color: #4CD964; 
-    color: white;
+.message.correct {
+    background: transparent;
+    color: #4CD964; 
     align-self: center;
     width: 100% !important; /* Maximum width of message */
-    margin-bottom: 10px;
-    text-align: center;
 }
 
 /* Optional: Styles for the chat panel (container) */
@@ -141,11 +139,16 @@ a:hover {
     border: 1px solid #d2d2d7;
     border-radius: 15px;
     padding: 20px;
-    width: 300px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    height: calc(100vh - 225px);
+    overflow-y: auto;
+    margin-right: 40px;
 }
 
 /* Chat input container */
@@ -196,4 +199,68 @@ a:hover {
 /* Add spacing between the input and button if needed */
 .chat-input input, .chat-input button {
     margin-right: 8px;
+}
+
+/* Crown image above the user icon */
+.user-crown {
+    position: absolute;
+    top: -10px;  /* Position the crown above the user icon */
+    left: 50%;
+    transform: translateX(-50%);  /* Center the crown horizontally */
+    width: 24px;  /* Adjust the size of the crown */
+    height: 24px;
+}
+
+.user-crown img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensuring all user divs occupy the same space */
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    background-color: #f9f9f9; /* Background color for user */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px;
+    width: 120px; /* Set fixed width for all users */
+    height: 160px; /* Set fixed height for all users */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    position: relative; /* To position the crown above the user icon */
+}
+
+/* User icon size */
+.user-icon {
+    width: 60px; /* Fixed size for user icon */
+    height: 60px; /* Fixed size for user icon */
+    border-radius: 50%; /* Make the icon circular */
+    background-color: #f0f0f5; /* Background color of icon */
+    border: 1px solid #d2d2d7;
+    display: inline-block;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* User image inside the icon */
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%; /* Keep the image round */
+}
+
+/* Username styling */
+.username {
+    margin-top: 10px; /* Space between icon and username */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Highlight the current logged-in user */
+.user.current-user {
+    background-color: #d3f4ff; /* Light blue background for the current user */
 }

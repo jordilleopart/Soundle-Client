@@ -4,53 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/leaderboard.css">
+    <!--General config and reusable functions-->
+    <script src="../js/utils.js"></script>
 </head>
 <body>
     <main>
         <header>
-            <h1>Game Template</h1>
+            <h1>Final Leaderboard</h1>
         </header>
-        <div class="leaderboard">
-            <div class="panel-header">
-                <span>Leaderboard</span>
+        <!--<div class="challenge-container">
+            <div class="image-placeholder" id="album-container">
+                <img id="track-image" src="https://i.scdn.co/image/ab67616d0000b2737e7f1d0bdb2bb5a2afc4fb25" alt="Track Cover">
             </div>
+            <div class="correct-box" id="track-info">
+                <p id="track-year" >Release date: 2025-01-31 </p>
+                <p id="track-artist">Artist: The Weeknd </p>
+                <p id="track-name">Name: Cry For Me </p>
+            </div>
+        </div>-->
+        
+        <div class="leaderboard">
             <div class="leaderboard-list">
                 <!-- User rows will be added dynamically here -->
-                <div class="user-row">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 1" class="profile-pic">
-                    <div class="user-details">
-                        <div class="user-info">
-                            <p class="username">User 1</p>
-                            <p class="points">1000</p>
-                        </div>
-                        <div class="attempts">
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-row">
-                    <img src="../img/person.crop.circle.fill-grey.png" alt="User 1" class="profile-pic">
-                    <div class="user-details">
-                        <div class="user-info">
-                            <p class="username">User 1</p>
-                            <p class="points">1000</p>
-                        </div>
-                        <div class="attempts">
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                            <div class="attempt-box"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
-    <script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
-    <script defer src="../js/game.js"></script>
+    <!--<script src="https://www.youtube.com/iframe_api"></script>--> <!-- YouTube API -->
+    <script defer src="../js/leaderboard.js"></script>
 </body>
 </html>

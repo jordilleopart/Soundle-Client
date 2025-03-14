@@ -2,6 +2,9 @@
 const sendButton = document.querySelector('.chat-input button');
 const chatMessages = document.querySelector('.chat-messages');
 const inputField = document.querySelector('.chat-input input');
+const startButton = document.querySelector('.start-button');
+
+var lobbyId = undefined;
 
 // Function to handle sending messages
 sendButton.addEventListener('click', function() {
@@ -10,7 +13,7 @@ sendButton.addEventListener('click', function() {
     // Check if the input is not empty
     if (messageText !== "") {
         // Create a new message element
-        chat.sendMessage({type: "chat", author: localStorage.getItem('username'), content: messageText});
+        chat.sendMessage(JSON.stringify({type: "chat", author: localStorage.getItem('username'), content: messageText}));
         // reset input
         inputField.value = "";
     }
@@ -24,7 +27,9 @@ inputField.addEventListener('keypress', function(event) {
 });
 
 function fillLobbyData(data) {
-    console.log(data)
+    // store number of rounds
+    localStorage.setItem('maxRounds', data.gameInfo.rounds);
+
     // Update the titles
     const pageTitle = document.querySelector('title');
     pageTitle.innerText = `Soundle - ${data.gameInfo.user_name}'s game`;
@@ -35,6 +40,13 @@ function fillLobbyData(data) {
     // Update the author
     const gameAuthorElement = document.getElementById('game-creator');
     gameAuthorElement.textContent = `by ${data.gameInfo.user_name}`;
+
+    // Update game code if needed
+    if (data.gameInfo.game_type === "private") {
+        const gameCodeElement = document.getElementById('game-code');
+        gameCodeElement.innerHTML = 'Code: <strong>' + data.gameInfo.code + '</strong>';  // Added strong tag
+        gameCodeElement.classList.remove('hidden');
+    }
 
     // Update the number of users in the room
     const usersCountElement = document.getElementById('users-count');
@@ -51,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('jwtToken');
 
     const urlParams = new URLSearchParams(window.location.search);
-	const lobbyId = urlParams.get('gameId');
+	lobbyId = urlParams.get('gameId');
 
     fetch(`${config.address}/game/lobby?gameId=${lobbyId}`, {
         method: 'GET',
@@ -116,6 +128,17 @@ document.getElementById("leave-button").addEventListener("click", (event) => {
     performLeaveAction();
     window.location.href = "home.html"; // Redirect after leaving the room
 });
+
+
+startButton.addEventListener('click', (event) => {
+    if (localStorage.getItem('master') === localStorage.getItem('username')) {
+        event.preventDefault(); // Prevent default button action
+        customLeave = true;  // Set the flag to true when the user clicks "Start"
+
+        // Send start signal to all players
+        chat.sendMessage(JSON.stringify({type: "start"}));
+    }
+})
 
 // Beforeunload event to call the performLeaveAction
 window.addEventListener('beforeunload', (event) => {

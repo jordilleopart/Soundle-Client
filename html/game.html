@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/game.css">
+    <!--General config and reusable functions-->
+    <script src="../js/utils.js"></script>
 </head>
 <body>
     <main>
@@ -26,10 +28,14 @@
                     <p id="track-artist" class="hidden">Artist: </p>
                 </div>
                 <div class="controls">
+                    <!-- Timer -->
+                    <div id="timer" class="timer">
+                        <p>30</p> <!-- This will be dynamically updated -->
+                    </div>
                     <div class="audio-player">
-                        <button id="shuffle-btn">
+                        <!-- <button id="shuffle-btn">
                             <img src="../img/shuffle.png" alt="Shuffle">
-                        </button>
+                        </button> -->
                         <button id="play-btn">
                             <img id="play-icon" src="../img/play.fill.png" alt="Play">
                         </button>
@@ -46,40 +52,42 @@
                     <div class="input-container">
                         <input type="text" id="user-input" placeholder="Type your guess here...">
                     </div>
-                    <progress class="progress" value="15" max="50"></progress>
-                    <div id="audio-player-container">
+                    <progress class="progress" id="audio-progress" value="0" max="100"></progress>
+                    <!--<div id="audio-player-container">
                         <iframe id="player" width="0" height="0" 
                                 src="" 
                                 frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowfullscreen>
                         </iframe>
-                    </div>
+                    </div>-->
+                    <audio id="audio-player" src=""></audio>
                 </div>
+            </div>
+            <div class="round-display">
+                <!-- Round Display -->
+                <p id="round-info">Round 1/10</p> <!-- This will be dynamically updated -->
             </div>
             <div class="chat-panel">
                 <div class="panel-header">
-                    <span>Chat</span>
+                    <span>User in game</span>
                     <span>x</span>
                 </div>
                 <div class="chat-messages">
                     <!-- Mensajes de ejemplo -->
-                    <div class="message received">username1: Hello, how are you?</div>
-                    <div class="message sent">username2: I'm good, thanks! How about you?</div>
-                    <div class="message received">username3: I'm doing great, just waiting for the game to start!</div>
-                    <div class="message correct">username has guessed the song</div>
-                    
                 </div>
-                <!--<div class="chat-input">
+                <div class="chat-input">
                     <input type="text" placeholder="Type a message...">
-                    <button>Send</button>
-                </div>-->
+                    <button id="send-btn">Send</button>
+                </div>
             </div>
             <div class="error-container">
             </div>
+
+            <!-- Leave button -->
+            <button id="next-button" class="next-button hidden">Next</button>
         </div>        
-        </div>
     </main>
-    <script src="https://www.youtube.com/iframe_api"></script> <!-- YouTube API -->
+    <!--<script src="https://www.youtube.com/iframe_api"></script> --> <!-- YouTube API -->
     <script defer src="../js/game.js"></script>
 </body>
 </html>

@@ -1,79 +1,47 @@
-const address = "http://localhost:3000";
-let currentStep = 0;
+var lobbyId = undefined;
+var round = undefined;
+const chatInput = document.querySelector('.chat-input input');
+const sendButton = document.getElementById('send-btn');
 
-// Global variables for track information (predetermined values)
-let trackArtist = "The Weeknd";
-let releaseDate = "2025-01-31";
-let trackImage = "https://i.scdn.co/image/ab67616d0000b2737e7f1d0bdb2bb5a2afc4fb25";
-let trackName = "Cry for Me";
-let urlYouTube = "https://www.youtube.com/watch?v=bn8gP5N8hqM";
-let player;
-
-let startTime = 50; // Store the initial time at which the video starts
-let audio_duration = 10 // audio duration in seconds
-var guessesLeft = 4;
-
-// Elements to be displayed in sequence
-const elements = [
-    document.getElementById('track-year'),
-    document.getElementById('track-image'),
-    document.getElementById('track-artist'),
-];
-const attemptBoxes = document.querySelectorAll('.attempt-box');
-
-// Function to update global track variables and update the HTML content
-function updateTrackInfo(artist, date, image, name, youtubeUrl) {
-    trackArtist = artist;
-    releaseDate = date;
-    trackImage = image;
-    trackName = name;
-    urlYouTube = youtubeUrl;
-
-    // Format the release date to display only the date
-    const formattedDate = new Date(releaseDate).toLocaleDateString('en-GB'); // 'en-GB' for day/month/year format
-
-    // Update the track information in the UI (but keep the image hidden)
-    document.getElementById('track-artist').textContent = `Artist: ${trackArtist}`;
-    document.getElementById('track-year').textContent = `Release date: ${formattedDate}`;
-    document.getElementById('track-image').src = trackImage;
-
-    // Extract YouTube video ID and update the embedded player
-    const videoId = extractYouTubeId(urlYouTube);
-    updateYouTubePlayer(videoId);
-}
-
-// Function to reveal the next track element
-function revealNextTrackElement() {
-    if (currentStep < elements.length) {
-        elements[currentStep].classList.remove('hidden');
-        currentStep++;
-    }
-}
-
-// Event listener to progressively reveal track elements
+// Event Listeners
 document.getElementById('show-elements-btn').addEventListener('click', function() {
-    if (guessesLeft > 0) {  
-        checkUserInput("");
-        guessesLeft--;
+    if (game.guessesLeft > 0) {  
+        game.checkUserInput("");
+        game.guessesLeft--;
     }
-    
 });
 
-// Event listener for fetching a random track from the server
-document.getElementById('shuffle-btn').addEventListener('click', function() {
-    // Clear any existing error messages before fetching new track data
-    const errorContainer = document.querySelector('.error-container');
-    errorContainer.innerHTML = ''; // This removes all error messages
+document.getElementById('play-btn').addEventListener('click', game.togglePlayPause);
 
-    // Reset the currentStep to 0 to start the track element sequence from the beginning
-    currentStep = 0;
+document.getElementById('user-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && game.guessesLeft > 0) {
+        event.preventDefault();
+        const userInput = event.target.value.trim();
+        game.checkUserInput(userInput);
+        game.guessesLeft--;
+        event.target.value = "";
+    }
+});
 
-    // Hide all elements initially before revealing them again
-    elements.forEach(element => element.classList.add('hidden'));
-    attemptBoxes.forEach(box => box.style.backgroundColor = ''); // Reset the background color
+sendButton.addEventListener('click', function() {
+    const userInput = chatInput.value.trim();
+    if (userInput !== ""){
+        // Create a new message element
+        chat.sendMessage(JSON.stringify({type: "chat", author: localStorage.getItem('username'), content: userInput}));
+        // reset input
+        chatInput.value = "";
+    }
+});
 
+chatInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendButton.click();
+    }
+});
+
+function getRandomTrack() {
     const token = localStorage.getItem('jwtToken');
-    fetch(`${address}/track/random`, {
+    fetch(`${config.address}/track/random`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -85,209 +53,95 @@ document.getElementById('shuffle-btn').addEventListener('click', function() {
         return response.json().then(data => {
             sessionStorage.setItem('httpStatus', response.status);
             sessionStorage.setItem('customMessage', data.message);
-            throw new Error('Error fetching track data');
+            // Redirect to error-template.html upon error
+            window.location.href = 'error-template.html';
         });
     })
     .then(data => {
-        // Adapt the response to match the expected format
-        updateTrackInfo(
-            data.track_artist,         
-            data.track_release_date,   
-            data.track_cover_url,      
-            data.track_name,           
-            data.track_preview_url   
-        );
+        chat.sendMessage(JSON.stringify({type: "track", trackInfo: data}));
     })
     .catch(error => console.error('Error fetching data:', error));
-});
+};
 
-// We don't need this if we pass the ID instead of the URL on the API call
-// Function to extract the YouTube video ID from a given URL
-function extractYouTubeId(url) {
-    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-}
+// Define the starting time for the timer (in seconds)
+let timeLeft = 30;
 
-// Function to update the YouTube iframe with the new video ID
-function updateYouTubePlayer(videoId) {
-    if (videoId) {
-        document.getElementById('player').src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+// Select the elements for the timer and play button
+const timerElement = document.getElementById("timer");
+
+// Function to update the timer display
+function updateTimer() {
+    // Update the displayed timer
+    timerElement.textContent = timeLeft;
+
+    // If time is up, stop the timer
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval); // Stop the countdown
+        console.log("Time's up!");
+
+        game.guessesLeft = 0;
+
+        if (localStorage.getItem('master') === localStorage.getItem('username')) document.getElementById('next-button').classList.remove('hidden');
+    } else {
+        game.timeLeft = timeLeft;
     }
 }
 
-// This function is called by the YouTube IFrame API when it's ready
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
+// Page Load
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+	lobbyId = urlParams.get('gameId');
+    round = parseInt(urlParams.get('round'), 10);
+
+    chat.connectToLobby(lobbyId);
+
+    // upate round number
+    document.getElementById('round-info').innerText = `Round ${round}/${localStorage.getItem('maxRounds')}`;
+
+    if (localStorage.getItem('master') === localStorage.getItem('username')) getRandomTrack();
+
+    // Play music on load
+    setTimeout(() => {
+        game.togglePlayPause();
+        
+        // Start the countdown by updating every second
+        timerInterval = setInterval(() => {
+            // Decrease the time by 1 second
+            timeLeft--;
+            updateTimer(); // Update the display with the new time
+        }, 1000); // Run the function every 1000 milliseconds (1 second)
+    }, 1000);
+});
+
+document.getElementById('next-button').addEventListener('click', function() {
+    // redirect all users to either next round or leaderboard
+    if (round < localStorage.getItem('maxRounds')) {
+        const nextRound = round+1;
+        chat.sendMessage(JSON.stringify({type: "next", gameInfo: {"round": nextRound}}));
+    }
+    else chat.sendMessage(JSON.stringify({type: "end"}));
+})
+
+
+// Function to perform the fetch request when leaving
+function performLeaveAction() {
+    // Get the JWT token from local storage
+    const token = localStorage.getItem('jwtToken');
+
+    fetch(`${config.address}/game/leave/${chat.lobby}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Important for JSON payload
+            'Authorization': `Bearer ${token}` // Send the JWT token in the header
+        },
+        keepalive: true,  // This flag ensures the request is sent even if the page is unloading
     });
 }
 
-// This function is called when the player is ready
-function onPlayerReady(event) {
-    console.log('Player is ready!');
-    event.target.seekTo(startTime); // Start the video at the 30th second
-}
-
-// This function is called when the player state changes (e.g., play, pause, etc.)
-function onPlayerStateChange(event) {
-    const state = event.data;
-    console.log('Player state changed:', state);
-    const playButtonIcon = document.getElementById('play-icon');
-
-    if (state === YT.PlayerState.PLAYING) {
-        console.log('Video is playing');
-    } else if (state === YT.PlayerState.PAUSED) {
-        console.log('Video is paused');
-        // Change the icon back to play when the video is paused
-        playButtonIcon.src = '../img/play.fill.png';
-        // Revert the video to the start time (second 30) when it is paused
-        event.target.seekTo(startTime);
-    }
-}
-
-// Function to toggle play/pause
-function togglePlayPause() {
-    const playButtonIcon = document.getElementById('play-icon');
-    if (player) {
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-            // Change the icon to pause when the video starts playing
-            playButtonIcon.src = '../img/pause.fill.png';
-            // Set a timeout to pause the video after x seconds
-            setTimeout(() => {
-                player.pauseVideo();
-                playButtonIcon.src = '../img/play.fill.png'; // Change icon back to play
-                // Revert the video to the start time (second 30) after pausing
-                player.seekTo(startTime);
-            }, audio_duration*1000); // Pause after x seconds
-        }
-    } else {
-        console.log('Player is not initialized yet');
-    }
-}
-
-// Modify the event listener for the play button
-document.getElementById('play-btn').addEventListener('click', function () {
-    togglePlayPause();
-});
-
-// Function to check user input
-function checkUserInput(userInput) {
-    const currentTrack = trackName.trim();
-
-    if (userInput == "") {
-        userInput = "Skipped";
-    }
-
-    if (userInput.toLowerCase() !== currentTrack.toLowerCase()) {
-        const errorBox = document.createElement('div');
-        errorBox.classList.add('error-box');
-        errorBox.textContent = userInput;
-        document.querySelector('.error-container').appendChild(errorBox);
-        attemptBoxes[currentStep].style.backgroundColor = 'red';
-
-        // Reveal next track element when the user fails
-        revealNextTrackElement();
-
-        //TODO: SEND MESSAGE TO SERVER
-
-    } else {
-        const correctBox = document.createElement('div');
-        correctBox.classList.add('correct-box');
-        correctBox.textContent = trackName;
-        document.querySelector('.error-container').appendChild(correctBox);
-        attemptBoxes[currentStep].style.backgroundColor = '#4CAF50';
-        guessesLeft = 0; // Stop the game when the user guesses correctly
-
-        //TODO: SEND MESSAGE TO SERVER
-    }
-}
-
-// Event listener for the Enter key to submit user input
-document.getElementById('user-input').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter' && guessesLeft > 0) {
-        event.preventDefault();
-        const userInput = event.target.value.trim();
-        checkUserInput(userInput);
-        guessesLeft--;
-        event.target.value = ""; // Clean input
+// Beforeunload event to call the performLeaveAction
+window.addEventListener('beforeunload', (event) => {
+    // Check if the page is being refreshed by using sessionStorage
+    if (!game.customLeave) {
+        performLeaveAction();
     }
 });
-
-// Call updateTrackInfo() on page load to ensure initial values are stored
-updateTrackInfo(trackArtist, releaseDate, trackImage, trackName, urlYouTube);
-
-// Function to add a user to the leaderboard
-function addUserToLeaderboard(username, points, attempts) {
-    const leaderboardList = document.querySelector('.leaderboard-list');
-
-    const userRow = document.createElement('div');
-    userRow.classList.add('user-row');
-
-    const profilePic = document.createElement('img');
-    profilePic.src = "../img/person.crop.circle.fill-grey.png";
-    profilePic.alt = username;
-    profilePic.classList.add('profile-pic');
-
-    const userDetails = document.createElement('div');
-    userDetails.classList.add('user-details');
-
-    const userInfo = document.createElement('div');
-    userInfo.classList.add('user-info');
-
-    const usernameElem = document.createElement('p');
-    usernameElem.classList.add('username');
-    usernameElem.textContent = username;
-
-    const pointsElem = document.createElement('p');
-    pointsElem.classList.add('points');
-    pointsElem.textContent = points;
-
-    userInfo.appendChild(usernameElem);
-    userInfo.appendChild(pointsElem);
-
-    const attemptsElem = document.createElement('div');
-    attemptsElem.classList.add('attempts');
-
-    for (let i = 0; i < attempts; i++) {
-        const attemptBox = document.createElement('div');
-        attemptBox.classList.add('attempt-box');
-        attemptsElem.appendChild(attemptBox);
-    }
-
-    userDetails.appendChild(userInfo);
-    userDetails.appendChild(attemptsElem);
-
-    userRow.appendChild(profilePic);
-    userRow.appendChild(userDetails);
-
-    leaderboardList.appendChild(userRow);
-}
-
-// Example usage
-document.addEventListener('DOMContentLoaded', () => {
-    addUserToLeaderboard('User 1', 1000, 0);
-    addUserToLeaderboard('User 2', 999, 0);
-    addUserToLeaderboard('User 1', 1000, 0);
-    addUserToLeaderboard('User 2', 999, 0);
-    addUserToLeaderboard('User 1', 1000, 0);
-    
-
-    // Assuming you have a global variable for game progress
-    let gameProgress = 50; // Example value
-    const progressSlider = document.getElementById('game-progress');
-    progressSlider.value = gameProgress;
-});
-
-
-/* Funtions needed for the websocket implementation
-showUsers()
-showMessages()
-sendMessage()
-*/
