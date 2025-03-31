@@ -13,6 +13,7 @@ h1 {
 }
 
 .card {
+    
     width: 300px;
     height: 300px;
     display: flex;
