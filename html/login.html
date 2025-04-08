@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="../css/login-signup.css">
     <!--General config and reusable functions-->
     <script src="../js/utils.js"></script>
+    <!--Script to signin with Google-->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <header>
@@ -29,6 +31,10 @@
                 <a href="login.html">Forgot password?</a>   <!--This link is temporal until we have a password recovery system-->
                 <button type="submit">Login</button>
             </form>
+            <button id="google-button" class="google-button">
+                <img src="../img/google-logo.png" alt="Google logo">
+                <p>Continue with Google</p> 
+            </button>
             <p>Don't have an account? <a href="signup.html">Sign up now</a></p>
         </section>
     </main>

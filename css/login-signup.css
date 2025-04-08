@@ -65,7 +65,8 @@ main {
 button {
     width: 100%;
     padding: 10px;
-    font-size: 1.2em;
+    font-size: 1em;
+    font-weight: bold;
     color: white;
     background-color: #0071e3;
     border: none;
@@ -73,6 +74,7 @@ button {
     cursor: pointer;
     transition: background-color 0.2s;
     margin: 10px 0;
+    height: 45px;
 }
 
 button:hover {
@@ -110,4 +112,30 @@ button:hover {
 
 .hidden {
     display: none !important;
+}
+
+.google-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #005bb5;
+    background-color: #d2e9ff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.google-button img {
+    height: 25px;
+    margin-right: 20px;
+}
+
+
+
+.google-button:hover {
+    background-color: #b5d8f8;
 }

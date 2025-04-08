@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="../css/login-signup.css">
     <!--General config and reusable functions-->
     <script src="../js/utils.js"></script>
+    <!--Script to signin with Google-->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <header>
@@ -36,6 +38,10 @@
                 <div id="error-message" class="error-message hidden"></div>  <!--This div is used to display error messages-->
                 <button type="submit">Sign Up</button>
             </form>
+            <button id="google-button" class="google-button">
+                <img src="../img/google-logo.png" alt="Google logo">
+                <p> Continue with Google </p> 
+            </button>
             <p>Already have an account? <a href="login.html">Login here</a></p>
         </section>
     </main>

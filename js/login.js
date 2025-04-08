@@ -1,3 +1,5 @@
+//const GOOGLE_CLIENT_ID = "623629811260-l8ivmgl62t9lvdt9clo2203hcmdm37vr.apps.googleusercontent.com";
+
 // Trigger login action in back-end in successful submit
 const loginForm = document.getElementById("login-form");
 loginForm.addEventListener('submit', (event) => {
@@ -55,3 +57,73 @@ loginForm.addEventListener('submit', (event) => {
         }
     });
 });
+
+
+// Inicializar Google Identity Services cuando la página cargue
+window.onload = function () {
+    fetch(`${config.address}/login/google-client-id`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('No se pudo obtener el Google Client ID');
+            }
+            return res.json(); // Parsear la respuesta JSON
+        })
+        .then(data => {
+            const clientId = data.client_id; // Extraer el client_id del JSON
+
+            // Inicializar Google Identity Services con el client_id obtenido
+            google.accounts.id.initialize({
+                client_id: clientId, // Usar el Client ID obtenido del backend
+                callback: handleGoogleLoginResponse // Función que manejará la respuesta
+            });
+
+            // Agregar un evento al botón personalizado
+            const googleButton = document.getElementById("google-button");
+            googleButton.addEventListener("click", () => {
+                google.accounts.id.prompt(); // Mostrar el flujo de inicio de sesión de Google
+            });
+        })
+        .catch(err => {
+            console.error('Error al inicializar Google Identity Services:', err);
+        });
+};
+
+
+// Función para manejar la respuesta del login con Google
+function handleGoogleLoginResponse(response) {
+    console.log("Token de Google:", response.credential);
+    // Enviar el token al backend para validarlo
+    const googleToken = response.credential;
+
+    // Enviar el token al backend para validarlo y generar un JWT
+    fetch('/api/login/google', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: googleToken }) // Enviar el token al backend
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json(); // Parsear la respuesta del backend
+        } else {
+            throw new Error('Error al iniciar sesión con Google');
+        }
+    })
+    .then(data => {
+        // Guardar el JWT recibido del backend en el almacenamiento local
+        localStorage.setItem('jwt', data.jwt);
+        alert('Inicio de sesión exitoso');
+        // Redirigir al usuario a la página principal o dashboard
+        window.location.href = '/error-template.html';
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error al iniciar sesión con Google');
+    });
+}
