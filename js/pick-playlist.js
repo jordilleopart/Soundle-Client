@@ -10,81 +10,62 @@ function getUrlParameters() {
     return result;
 }
 
-const playlists = document.querySelectorAll('.playlist, .other-playlist');
-console.log(playlists); // Show all playlists in the console
+document.addEventListener('DOMContentLoaded', () => {
+    // Crear playlists dinámicamente
+    createPlaylistItem(['Music that my innie would listent to if he worked in a 80s company', 'My Playlist 2', 'My Playlist 3', 'My Playlist 4', 'My Playlist 5'], 'jordilleopart','my-playlists-grid');
+    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3', 'Not My Playlist 4', 'Not My Playlist 5', 'Not My Playlist 6', 'Not My Playlist 7', 'Not My Playlist 8', 'Not My Playlist 9'] , 'not jordilleopart','popular-playlists');
+    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3'], 'not jordilleopart', 'recent-playlists');
 
-// Add a click event listener to each link
-playlists.forEach(playlist => {
-    playlist.addEventListener('click', function(event) {
-        // Prevent the default link behavior (navigating to the href)
-        event.preventDefault();
+    // Seleccionar playlists después de que se hayan creado
+    const playlists = document.querySelectorAll('.playlist, .other-playlist');
 
-        // Retrieve the text content of the link (anchor tag)
-        const playlistItem = document.querySelector('.playlist-item');
-        const playlistText = playlistItem.textContent.trim();
-        //const playlistText = "looby.html"; // Default value change later
+    // Mostrar playlists en la consola
+    playlists.forEach(playlist => {
+        console.log(playlist);
+    });
 
-        // Access values of url params
-        const urlParams = getUrlParameters();
-        const participants = urlParams['participants'];
-        const gameType = urlParams['type'];
-        const rounds = urlParams['rounds'];
+    // Añadir event listeners a las playlists
+    playlists.forEach(playlist => {
+        playlist.addEventListener('click', function(event) {
+            event.preventDefault();
 
-        // Get the JWT token from local storage
-        const token = localStorage.getItem('jwtToken');
+            // Obtener el texto del elemento playlist
+            const playlistItem = document.querySelector('.playlist-item');
+            const playlistText = playlistItem.textContent.trim();
+            console.log(playlistText);
 
-        // Create the payload to send to the back-end
-        const payload = {
-            maxPlayers: participants,
-            gameType: gameType,
-            rounds: rounds,
-            playlist: playlistText // Add the link text in the request body
-        };
+            // Access values of url params
+            const urlParams = getUrlParameters();
+            const participants = urlParams['participants'];
+            const gameType = urlParams['type'];
+            const rounds = urlParams['rounds'];
 
-        // Send request to back-end to create the game
-        fetch(`${config.address}/game/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json', // Important for JSON payload
-                'Authorization': `Bearer ${token}` // Send the JWT token in the header
-            },
-            body: JSON.stringify(payload) // Send the payload in the request body
-        })
-        .then(response => {
-            switch (response.status) {
-                case 200:
-                    return response.json();
-                default:
-                    // Handle other error responses (e.g., 400, 401, 403, etc.)
-                    response.json().then(data => {
-                        sessionStorage.setItem('httpStatus', response.status);
-                        sessionStorage.setItem('customMessage', data.message);
-                    });
-                    // Redirect to error-template.html upon error
-                    window.location.href = 'error-template.html';
-                    break;
-            }
-        })
-        .then(jsonData => {
-            
-            // creation of game was succesful, then join game
-            fetch(`${config.address}/game/join/${jsonData.gameId}?code=${jsonData.code}`, {
+            // Get the JWT token from local storage
+            const token = localStorage.getItem('jwtToken');
+
+            // Create the payload to send to the back-end
+            const payload = {
+                maxPlayers: participants,
+                gameType: gameType,
+                rounds: rounds,
+                playlist: playlistText // Add the link text in the request body
+            };
+
+            // Send request to back-end to create the game
+            fetch(`${config.address}/game/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Important for JSON payload
                     'Authorization': `Bearer ${token}` // Send the JWT token in the header
-                }
+                },
+                body: JSON.stringify(payload) // Send the payload in the request body
             })
             .then(response => {
                 switch (response.status) {
                     case 200:
-                        response.json().then(data => {
-                            // Move to corresponding lobby
-                            window.location.href = `lobby.html?gameId=${data.gameId}`;
-                        })
-                        break;
+                        return response.json();
                     default:
-                        // Handle other error responses (e.g., 422, 500, etc.)
+                        // Handle other error responses (e.g., 400, 401, 403, etc.)
                         response.json().then(data => {
                             sessionStorage.setItem('httpStatus', response.status);
                             sessionStorage.setItem('customMessage', data.message);
@@ -94,6 +75,44 @@ playlists.forEach(playlist => {
                         break;
                 }
             })
+            .then(jsonData => {
+                
+                // creation of game was succesful, then join game
+                fetch(`${config.address}/game/join/${jsonData.gameId}?code=${jsonData.code}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Important for JSON payload
+                        'Authorization': `Bearer ${token}` // Send the JWT token in the header
+                    }
+                })
+                .then(response => {
+                    switch (response.status) {
+                        case 200:
+                            response.json().then(data => {
+                                // Move to corresponding lobby
+                                window.location.href = `lobby.html?gameId=${data.gameId}`;
+                            })
+                            break;
+                        default:
+                            // Handle other error responses (e.g., 422, 500, etc.)
+                            response.json().then(data => {
+                                sessionStorage.setItem('httpStatus', response.status);
+                                sessionStorage.setItem('customMessage', data.message);
+                            });
+                            // Redirect to error-template.html upon error
+                            window.location.href = 'error-template.html';
+                            break;
+                    }
+                })
+                .catch(error => {
+                    // Handle error parsing json
+                    sessionStorage.setItem('httpStatus', 500);
+                    sessionStorage.setItem('customMessage', "Internal Server Error");
+                    // Redirect to error-template.html upon error
+                    window.location.href = 'error-template.html';
+                });
+
+            })
             .catch(error => {
                 // Handle error parsing json
                 sessionStorage.setItem('httpStatus', 500);
@@ -101,18 +120,9 @@ playlists.forEach(playlist => {
                 // Redirect to error-template.html upon error
                 window.location.href = 'error-template.html';
             });
-
-        })
-        .catch(error => {
-            // Handle error parsing json
-            sessionStorage.setItem('httpStatus', 500);
-            sessionStorage.setItem('customMessage', "Internal Server Error");
-            // Redirect to error-template.html upon error
-            window.location.href = 'error-template.html';
         });
     });
 });
-
 
 // Function to create playlist buttons dynamically
 function createPlaylistItem(playlistNames, playlistCreators, playlistGridId) {
@@ -172,8 +182,3 @@ function createPlaylistItem(playlistNames, playlistCreators, playlistGridId) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    createPlaylistItem(['Music that my innie would listent to if he worked in a 80s company', 'My Playlist 2', 'My Playlist 3', 'My Playlist 4', 'My Playlist 5'], 'jordilleopart','my-playlists-grid');
-    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3', 'Not My Playlist 4', 'Not My Playlist 5', 'Not My Playlist 6', 'Not My Playlist 7', 'Not My Playlist 8', 'Not My Playlist 9'] , 'not jordilleopart','popular-playlists');
-    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3'], 'not jordilleopart', 'recent-playlists');
-});
