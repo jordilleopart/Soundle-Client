@@ -11,38 +11,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>Pick Playlist</h1>
-        <h2>Your playlists</h2>
-        <h6>Here you have a list of your playlists</h6>
-        <div class="grid" id="live-radio">
-            <a href="lobby.html" class="playlist">1</a>
-            <a href="lobby.html" class="playlist">HITS</a>
-            <a href="lobby.html" class="playlist">COUNTRY</a>
-            <a href="lobby.html" class="playlist">MÚSICA UNO</a>
-            <a href="lobby.html" class="playlist">club</a>
-            <a href="lobby.html" class="playlist">1</a>
+        <h2>Pick a Playlist</h2>
+        <h4>Your playlists</h4>
+        <div class="my-playlists-grid" id="my-playlists-grid">
+            <div class="playlist-item">
+                <a class="playlist" href="lobby.html">
+                    <img src="../img/music.note.list.png" class="playlist-cover">
+                </a>
+                <div class="playlist-info">
+                    <p class="playlist-name">Playlist Name</p>
+                    <p class="playlist-creator">jordilleopart</p>
+                </div>
+            </div>
+            
+            <!--Playlist added here dyanmically-->
         </div>
-        
-        <h2>Most played playlist</h2>
-        <h6>Here you have a list of the most played playlists in the last 24 hours</h6>
-        <div class="grid2" id="local-radio">
-            <a href="lobby.html" class="other-playlist">Cadena 100</a>
-            <a href="lobby.html" class="other-playlist">KISS FM</a>
-            <a href="lobby.html" class="other-playlist">LOS40</a>
-            <a href="lobby.html" class="other-playlist">Rock FM</a>
-            <a href="lobby.html" class="other-playlist">Hit FM</a>
-            <a href="lobby.html" class="other-playlist">LOS40</a>
+        <h4>Most popular playlists</h4>
+        <div class="other-playlist-grid" id="recent-playlists">
+            <!--Playlist added here dyanmically-->
         </div>
-
-        <h2>Just Created</h2>
-        <h6>Here you have a list of the most recently created playlists</h6>
-        <div class="grid2" id="local-radio">
-            <a href="lobby.html" class="other-playlist">Cadena 100</a>
-            <a href="lobby.html" class="other-playlist">KISS FM</a>
-            <a href="lobby.html" class="other-playlist">LOS40</a>
-            <a href="lobby.html" class="other-playlist">Rock FM</a>
-            <a href="lobby.html" class="other-playlist">Hit FM</a>
-            <a href="lobby.html" class="other-playlist">KISS FM</a>
+        <h4>Recently created playlists</h4>
+        <div class="other-playlist-grid" id="popular-playlists">
+            <!--Playlist added here dyanmically-->
         </div>
     </div>
     <script src="../js/pick-playlist.js"></script>

@@ -87,8 +87,10 @@
     background-color: #f9f9f9; /* Background color for user */
     border-radius: 10px; /* Rounded corners */
     padding: 10px;
+    padding-top: 20 px; /* Space for the icon */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
     transition: background-color 0.3s ease; /* Smooth transition for background color */
+    height: max-content;
 }
 
 /* User icon */

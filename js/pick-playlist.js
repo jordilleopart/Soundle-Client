@@ -10,8 +10,8 @@ function getUrlParameters() {
     return result;
 }
 
-// Select all the links with the class 'playlist' and 'other-playlist'
 const playlists = document.querySelectorAll('.playlist, .other-playlist');
+console.log(playlists); // Show all playlists in the console
 
 // Add a click event listener to each link
 playlists.forEach(playlist => {
@@ -20,7 +20,9 @@ playlists.forEach(playlist => {
         event.preventDefault();
 
         // Retrieve the text content of the link (anchor tag)
-        const playlistText = playlist.textContent.trim();
+        const playlistItem = document.querySelector('.playlist-item');
+        const playlistText = playlistItem.textContent.trim();
+        //const playlistText = "looby.html"; // Default value change later
 
         // Access values of url params
         const urlParams = getUrlParameters();
@@ -109,4 +111,69 @@ playlists.forEach(playlist => {
             window.location.href = 'error-template.html';
         });
     });
+});
+
+
+// Function to create playlist buttons dynamically
+function createPlaylistItem(playlistNames, playlistCreators, playlistGridId) {
+    // Obtener el contenedor por su ID
+    const playlistGridElement = document.getElementById(playlistGridId);
+    const playlistType = playlistGridId === 'my-playlists-grid' ? 'playlist' : 'other-playlist';
+
+    // Verificar si el contenedor existe
+    if (!playlistGridElement) {
+        console.error(`Element with ID "${playlistGridId}" not found.`);
+        return;
+    }
+
+    // Iterar sobre los nombres de las playlists
+    playlistNames.forEach(name => {
+        // Crear el contenedor principal para la playlist
+        const playlistItem = document.createElement('div');
+        playlistItem.classList.add('playlist-item');
+
+        // Crear el enlace de la playlist
+        const playlistLink = document.createElement('a');
+        playlistLink.classList.add(`${playlistType}`);
+        playlistLink.href = "lobby.html";
+
+        // Crear la imagen de la playlist
+        const playlistCover = document.createElement('img');
+        playlistCover.src = "../img/music.note.list.png";
+        playlistCover.alt = `${name} cover`;
+        playlistCover.classList.add('playlist-cover');
+
+        // Crear el nombre de la playlist
+        const playlistInfo = document.createElement('div');
+        playlistInfo.classList.add('playlist-info');
+
+        const playlistName = document.createElement('p');
+
+        playlistName.textContent = name;
+        playlistName.classList.add('playlist-name');
+        playlistInfo.appendChild(playlistName);
+
+        const playlistCreator = document.createElement('p');
+        playlistCreator.textContent = `${playlistCreators}`; // not working right now
+        
+        
+        playlistCreator.classList.add('playlist-creator');
+        
+        playlistInfo.appendChild(playlistCreator);
+
+        // Construir la estructura
+        playlistLink.appendChild(playlistCover);
+        playlistItem.appendChild(playlistLink);
+        playlistItem.appendChild(playlistInfo);
+
+        // Añadir el elemento al contenedor principal
+        playlistGridElement.appendChild(playlistItem);
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    createPlaylistItem(['Music that my innie would listent to if he worked in a 80s company', 'My Playlist 2', 'My Playlist 3', 'My Playlist 4', 'My Playlist 5'], 'jordilleopart','my-playlists-grid');
+    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3', 'Not My Playlist 4', 'Not My Playlist 5', 'Not My Playlist 6', 'Not My Playlist 7', 'Not My Playlist 8', 'Not My Playlist 9'] , 'not jordilleopart','popular-playlists');
+    createPlaylistItem(['Not My Playlist 1', 'Not My Playlist 2', 'Not My Playlist 3'], 'not jordilleopart', 'recent-playlists');
 });

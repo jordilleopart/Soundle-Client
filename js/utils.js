@@ -244,7 +244,7 @@ class Chat {
                     const crownDiv = document.createElement('div');
                     crownDiv.classList.add('user-crown');
                     const crownImage = document.createElement('img');
-                    crownImage.src = '../img/crown.png'; // Placeholder path for the crown
+                    crownImage.src = '../img/master.png'; // Placeholder path for the crown
                     crownImage.alt = 'Master';
                     crownDiv.appendChild(crownImage);
                     userDiv.appendChild(crownDiv);  // Append crown above the user icon
